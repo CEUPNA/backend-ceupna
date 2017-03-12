@@ -1,0 +1,5 @@
+# Proyecto de backend
+
+# Crawler in scrapy (python)
+*.pyc
+/crawler/*.html
