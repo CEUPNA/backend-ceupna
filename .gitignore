@@ -3,3 +3,7 @@
 # Crawler in scrapy (python)
 *.pyc
 /crawler/*.html
+db.sqlite3
+
+# Para el IDE de PyCharm
+.idea
