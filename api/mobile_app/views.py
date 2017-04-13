@@ -1,9 +1,11 @@
-from models import Teacher
-from serializers import TeacherSerializer
+# -*- coding: utf-8 -*-
+
+from .models import Teacher
+from .serializers import TeacherSerializer
 from rest_framework import viewsets
 
 
-class TeacherViewSet(viewsets.ReadOnlyModelViewSet):
+class TeacherViewSet(viewsets.ModelViewSet):
     """
     This viewset automatically provides `list` and `detail` actions.
     """
