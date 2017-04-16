@@ -9,7 +9,8 @@ import scrapy
 
 
 class TeacherItem(scrapy.Item):
-    id = scrapy.Field()
+    upna_id = scrapy.Field()
     name = scrapy.Field()
     email = scrapy.Field()
     telephone = scrapy.Field()
+    timetable = scrapy.Field()
