@@ -5,7 +5,7 @@ from .serializers import TeacherSerializer
 from rest_framework import viewsets
 
 
-class TeacherViewSet(viewsets.ModelViewSet):
+class TeacherViewSet(viewsets.ReadOnlyModelViewSet):
     """
     This viewset automatically provides `list` and `detail` actions.
     """
