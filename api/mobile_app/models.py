@@ -2,6 +2,25 @@
 
 from django.db import models
 
+LANGUAGES = ['es', 'en', 'eus', 'fr']
+
+
+class Center(models.Model):
+    """
+    Clase para la representación de un centro universitario.
+    """
+    created = models.DateTimeField(auto_now_add=True)
+    center_id = models.PositiveIntegerField(unique=True)
+    name = models.CharField(max_length=100, blank=True, default='')
+    acronym = models.CharField(max_length=10, blank=True, default='')
+    email = models.EmailField(max_length=100, blank=True, default='')
+    telephone = models.CharField(max_length=20, blank=True, default='')
+    url = models.URLField(blank=True, default='')
+    last_updated = models.DateField(auto_now=True)  # Para saber cuándo fue la última vez que se cambió.
+
+    class Meta:
+        ordering = ('created',)
+
 
 class Teacher(models.Model):
     """
@@ -10,12 +29,11 @@ class Teacher(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     upna_id = models.PositiveIntegerField(unique=True)
     name = models.CharField(max_length=100, blank=True, default='')
-    # No tiene sentido utilizar el campo especial ya que sino puede dar una serie de errores que no nos interesa.
-    # Al fin y al cabo, internamente será un campo de caracteres.
-    email = models.CharField(max_length=100, blank=True, default='')
+    email = models.EmailField(max_length=100, blank=True, default='', unique=True)
     telephone = models.CharField(max_length=20, blank=True, default='')
-    timetable = models.CharField(max_length=10000, blank=True, default='')
+    timetable = models.TextField(max_length=100000, blank=True, default='')  # TODO: Hacer algo con la longitud.
     # subjects. Será una clave extranjera de la tabla de asignaturas.
+    last_updated = models.DateField(auto_now=True)  # Para saber cuándo fue la última vez que se cambió.
 
     class Meta:
         ordering = ('created',)
@@ -26,10 +44,11 @@ class TIC(models.Model):
     Clase para la representación de un recurso TIC.
     """
     created = models.DateTimeField(auto_now_add=True)
-    title = models.CharField(max_length=100, blank=True, default='')
-    icon = models.CharField(max_length=200, blank=True, default='')
-    description = models.CharField(max_length=1000, blank=True, default='')
-    link = models.CharField(max_length=200, blank=True, default='')
+    name = models.CharField(max_length=100, blank=True, default='')
+    icon = models.URLField(blank=True, default='')
+    description = models.TextField(max_length=1000, blank=True, default='')
+    url = models.URLField(blank=True, default='')
+    last_updated = models.DateField(auto_now=True)  # Para saber cuándo fue la última vez que se cambió.
 
     class Meta:
         ordering = ('created',)

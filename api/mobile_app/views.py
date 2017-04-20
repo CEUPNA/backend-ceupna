@@ -1,13 +1,21 @@
 # -*- coding: utf-8 -*-
 
-from .models import Teacher, TIC
-from .serializers import TeacherSerializer, TICSerializer
+from .models import Center, Teacher, TIC
+from .serializers import CenterSerializer, TeacherSerializer, TICSerializer
 from rest_framework import viewsets
+
+
+class CenterViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    Listado y vista en detalle de los Centros de la Universidad.
+    """
+    queryset = Center.objects.all()
+    serializer_class = CenterSerializer
 
 
 class TeacherViewSet(viewsets.ReadOnlyModelViewSet):
     """
-    This viewset automatically provides `list` and `detail` actions.
+    Listado y vista en detalle de los profesores de la Universidad
     """
     queryset = Teacher.objects.all()
     serializer_class = TeacherSerializer
@@ -27,7 +35,7 @@ class TeacherViewSet(viewsets.ReadOnlyModelViewSet):
 
 class TICViewSet(viewsets.ReadOnlyModelViewSet):
     """
-    This viewset automatically provides `list` and `detail` actions.
+    Listado y vista en detalle de los recursos TIC de la Universidad.
     """
     queryset = TIC.objects.all()
     serializer_class = TICSerializer

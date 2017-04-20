@@ -1,9 +1,15 @@
-# Proyecto de backend
+## Proyecto de backend para el CEUPNA
 
-# Crawler in scrapy (python)
+# General
 *.pyc
-/crawler/*.html
-db.sqlite3
 
-# Para el IDE de PyCharm
+# Crawler en scrapy (python)
+/crawler/*.html
+/crawler/data
+
+# Backend Django
+db.sqlite3
+api/key.txt
+
+# Para el IDE ‘PyCharm’
 .idea
