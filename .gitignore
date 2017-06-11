@@ -2,10 +2,13 @@
 
 # General
 *.pyc
+*.json
+*.csv
 
 # Crawler en scrapy (python)
 /crawler/*.html
 /crawler/data
+.scrapy
 
 # Backend Django
 db.sqlite3

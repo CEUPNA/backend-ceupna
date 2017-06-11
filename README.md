@@ -2,6 +2,7 @@
 
 Este proyecto ha sido desarrollado en su totalidad en python. En este sentido, se ha utilizado [scrapy](https://scrapy.org) como herramienta de inspección web, a fin de parte de los datos que se ofrecen por medio del servicio REST desarrollado con [Django REST framework](http://www.django-rest-framework.org). Además, posiblemente a futuro tenga una interfaz web de administración para poder controlar todos los parámetros del servicio así como su actualización.
 
+
 ## Araña web
 
 La intención básica de esta araña es obtener todos los datos que se van a ofrecer de entre los que dispone la [web de la UPNA](http://www.unavarra.es). Esta decisión se toma por la inexistencia de un servicio público de datos, al menos no en forma de API. De esta forma, alimentará de datos una base propia que será ofrecida por la API que se describe más abajo.
@@ -21,9 +22,6 @@ Si se le añade la opción `-o fichero.json` hará que los datos sean obtenidos 
 
 Todas estas opciones se encuentran [documentadas](https://doc.scrapy.org/en/latest/topics/commands.html).
 
-
-
-
 ### Unión con la base de datos de Django REST framework
 
 A fin de conseguir que los datos sean guardados en la base, se han preparado diferentes _scripts_ de adición de datos. Para ello se debe llamarlo así:
@@ -37,8 +35,6 @@ Sabiendo que las opciones que hay implementadas coinciden con los diferentes mod
 
 Cuando los datos que se quieran introducir ya estuvieran previamente introducidos, el _script_ se encarga de actualizar los mismos a la nueva versión que se presenta.
 
-[comment]Para conseguir que los datos sean guardados de forma adecuada, se utiliza un tipo especial de objeto que lleva acabo esta tarea de forma automática. Además, requiere de configurar una serie de parámetros en relación a la base de datos que se encuentran. La [documentación](https://github.com/scrapy-plugins/scrapy-djangoitem) específica es bastante clara.
-
 
 ## API REST
 Este servicio REST está programado también en python con Django REST framework como ya se ha explicado. Genera con ellos los JSON necearios para presentar la información contenida en la base de datos. A día de hoy, por razones de seguridad así como por coherencia, todos sus datos son de sólo lectura. Igualmente, ofrece búsquedas sobre algunos de los campos que muestra.
@@ -47,6 +43,7 @@ En particular, ahora mismo se puede recuperar por medio del servicio REST los si
 * relativos a los centros;
 * relativos a los profesores;
 * relativos a los recursos TIC que tienen los estudiantes.
+
 
 ## Instalación de todo el entorno
 El proyecto actual trabaja en Python 3. Además, se deben tener en cuenta las siguientes dependencias:

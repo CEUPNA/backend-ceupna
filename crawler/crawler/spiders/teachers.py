@@ -24,28 +24,30 @@ class TeachersSpider(CrawlSpider):
 
     start_urls = ["http://www.unavarra.es/dep-" + dpto +
                   "/personal/personal-docente-e-investigador?rangoLetras=a-z" for dpto in deparments]
+
+    # Para las pruebas, mejor con el chiquito.
 #    start_urls = ["http://www.unavarra.es/dep-tecnologiaalimentos/personal/personal-docente-e-investigador?rangoLetras=a-z"]
 
     rules = (
         Rule(LinkExtractor(allow=('.*',), restrict_xpaths=('//ul[contains(@class, "listadoCurriculum")]'),
-                           process_value=lambda x: x + addition_url), callback='parse_item'),
+                           process_value=lambda x: x + addition_url), callback='parse_teacher'),
     )
 
-    def parse_item(self, response):
+    def parse_teacher(self, response):
         """
-        Método para la extracción de los datos de cada una de las URL refente a cada profesor.
+        Método para la extracción de los datos de cada una de las URL referente a cada profesor.
         :param response: objeto de respuesta a la petición HTTP a cada una de las URL generadas.
-        :return: ojeto de tipo `teacher` con todos los datos de un profesor.
+        :return: objeto de tipo `teacher` con todos los datos de un profesor.
         """
         # Extracción y tratamiento de los campos.
         params_url = parse_qs(urlparse(response.url).query)  # Tratamiento del URL para coger el ID.
         upna_id = params_url['uid'][0]  # Recogido el ID del diccionario y guardado el texto.
-        name = response.xpath('//div[@class="fichaCurriculum"]/div/div/h2/text()').extract()[0]  # Base del nombre.
+        name = response.xpath('//div[@class="fichaCurriculum"]/div/div/h2/text()').extract_first()  # Base del nombre.
         name = ' '.join(name.title().split()).replace(" De ", " de ").replace(" Del ", " del ").replace(" La ", " la ")
         aux = response.xpath('//div[@class="fichaCurriculum"]/div/div/p/text()').extract()  # Para sacar el tfno y mail.
         email = ''.join(aux[0][1:].split()) + '@unavarra.es'  # Tratado para evitar los espacios en blanco.
         telephone = aux[2][1:] # TODO: Tratar el teléfono para aquellos que son "raros" y hacer todos iguales
-        timetable = self._parse_timetable(response.xpath('//div[@class="texto"]').extract()[0])  # Utilizando un método.
+        timetable = self._parse_timetable(response.xpath('//div[@class="texto"]').extract_first())  # Método tutorias.
 
         # Guardado de datos en las variables correspondientes.
         item = TeacherItem()
@@ -70,13 +72,13 @@ class TeachersSpider(CrawlSpider):
         """
         # Extracción y tratamiento de las tutorías.
         timetable_html = ' '.join(timetable_html.split())
-        parse_timetable = BeautifulSoup(timetable_html, 'html.parser')
-        del_elem = parse_timetable.div.div  # Extraigo y elimino los datos de la fichaCurriculum.
+        parsed_timetable = BeautifulSoup(timetable_html, 'html.parser')
+        del_elem = parsed_timetable.div.div  # Extraigo y elimino los datos de la fichaCurriculum.
         del_elem.extract()
-        del_elem = parse_timetable.div.h2  # Extraigo y elimino el h2 de tutorías.
+        del_elem = parsed_timetable.div.h2  # Extraigo y elimino el h2 de tutorías.
         del_elem.extract()
 
-        children = parse_timetable.find("div", {"class": "texto"}).findChildren()
+        children = parsed_timetable.find("div", {"class": "texto"}).findChildren()
         timetable = ''
         for child in children:
             timetable += str(child)
