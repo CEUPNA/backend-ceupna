@@ -2,7 +2,8 @@
 
 from django.db import models
 
-LANGUAGES = ['es', 'en', 'eus', 'fr']
+LANGUAGES = [('es', 'Español'), ('en', 'Inglés'),  ('eus', 'Euskera'), ('fr', 'Francés')]
+TYPE_SUBJ = [('ba', 'Básica'), ('ob', 'Obligatoria'),  ('op', 'Optativa')]
 
 
 class Center(models.Model):
@@ -11,15 +12,102 @@ class Center(models.Model):
     """
     created = models.DateTimeField(auto_now_add=True)
     center_id = models.PositiveIntegerField(unique=True)
-    name = models.CharField(max_length=100, blank=True, default='')
+    name_es = models.CharField(max_length=100, blank=True, default='')
+    name_eus = models.CharField(max_length=100, blank=True, default='')
+    name_en = models.CharField(max_length=100, blank=True, default='')
     acronym = models.CharField(max_length=10, blank=True, default='')
     email = models.EmailField(max_length=100, blank=True, default='')
     telephone = models.CharField(max_length=20, blank=True, default='')
-    url = models.URLField(blank=True, default='')
-    last_updated = models.DateField(auto_now=True)  # Para saber cuándo fue la última vez que se cambió.
+    web = models.URLField(blank=True, default='')
+    last_updated = models.DateTimeField(auto_now=True)  # Para saber cuando fue la última vez que se cambió.
+
+    def __str__(self):
+        return self.name_es
 
     class Meta:
         ordering = ('created',)
+        verbose_name = 'centro'
+        verbose_name_plural = 'centros'
+
+
+class Degree(models.Model):
+    """
+    Clase para la representación de un estudio de grado o máster.
+    """
+    created = models.DateTimeField(auto_now_add=True)
+    upna_id = models.PositiveIntegerField()
+    name_es = models.CharField(max_length=150, blank=True, default='')
+    name_eus = models.CharField(max_length=150, blank=True, default='')
+    name_en = models.CharField(max_length=150, blank=True, default='')
+    language = models.CharField(max_length=3, blank=True, default='', choices=LANGUAGES)  # TODO: Si es internacional, poner a inglés.
+    web = models.URLField(max_length=200, blank=True, default='')
+    bachelor = models.BooleanField(default=False)
+    international_prog = models.BooleanField(default=False)
+    english_prog = models.BooleanField(default=False)
+    french_prog = models.BooleanField(default=False)
+    center = models.ManyToManyField('Center')
+    last_updated = models.DateTimeField(auto_now=True)  # Para saber cuando fue la última vez que se cambió.
+
+    def clean(self):
+        """
+        Se encarga de sustituir cualquier dato del campo ´language´ a inglés si es un programa internacional.
+        """
+        if self.international_prog:
+            self.language = 'en'
+
+    def __str__(self):
+        return self.name_es
+
+    class Meta:
+        ordering = ('upna_id',)
+        unique_together = ('upna_id', 'language',)
+        verbose_name = 'titulación'
+        verbose_name_plural = 'titulaciones'
+
+
+class Subject(models.Model):
+    """
+    Clase para la representación de una asignatura de un cierto grado o máster.
+    """
+    created = models.DateTimeField(auto_now_add=True)
+    upna_id = models.PositiveIntegerField()
+    name = models.CharField(max_length=100, blank=True, default='')
+    credits = models.FloatField(default=0, blank=True,)
+    year = models.IntegerField(default=0, blank=True,)
+    semester = models.IntegerField(default=0, blank=True,)
+    type = models.CharField(max_length=2, blank=True, default='', choices=TYPE_SUBJ)
+    language = models.CharField(max_length=3, blank=True, default='', choices=LANGUAGES)
+    department = models.CharField(max_length=100, blank=True, default='') # A futuro tendrá que ser una clave extranjera.
+    degree = models.ForeignKey('Degree', on_delete=models.CASCADE)  # TODO: a uno y solo a uno???
+    teachers = models.ManyToManyField('Teacher')
+    last_updated = models.DateTimeField(auto_now=True)  # Para saber cuando fue la última vez que se cambió.
+
+    # Campos de la ficha
+    evaluation = models.TextField(max_length=10000, blank=True, default='')
+    contents = models.TextField(max_length=10000, blank=True, default='')
+    curriculum = models.TextField(max_length=10000, blank=True, default='')
+
+    # Direcciones web generadas al vuelo.
+    @property
+    def web(self):    # Para el idioma igual que la web de la UPNA
+        # return "http://www.unavarra.es/ficha-asignaturaDOA/?languageId=%d&codPlan=%d&codAsig=%d&anio=%d" \
+        #        % (100000, self.degree.upna_id, self.upna_id, 2016)
+        return "http://www.unavarra.es/ficha-asignaturaDOA/?codAsig=%d" \
+               % (self.upna_id,)
+
+    @property
+    def bibliography(self):  # Para el idioma (por ahora a nivel app): &LANG=es-ES &LANG=eu-ES &LANG=en-US
+        return "https://biblioteca.unavarra.es/abnetopac/abnetcl.cgi?ACC=DOSEARCH&xsqf99=%d*.t901." \
+               % (self.upna_id,)
+
+    def __str__(self):
+        return str(self.upna_id) + ' ' + self.name
+
+    class Meta:
+        ordering = ('created',)
+        unique_together = ('upna_id', 'language',)
+        verbose_name = 'asignatura'
+        verbose_name_plural = 'asignaturas'
 
 
 class Teacher(models.Model):
@@ -30,13 +118,21 @@ class Teacher(models.Model):
     upna_id = models.PositiveIntegerField(unique=True)
     name = models.CharField(max_length=100, blank=True, default='')
     email = models.EmailField(max_length=100, blank=True, default='', unique=True)
-    telephone = models.CharField(max_length=20, blank=True, default='')
+    telephone = models.CharField(max_length=30, blank=True, default='')
     timetable = models.TextField(max_length=100000, blank=True, default='')  # TODO: Hacer algo con la longitud.
-    # subjects. Será una clave extranjera de la tabla de asignaturas.
-    last_updated = models.DateField(auto_now=True)  # Para saber cuándo fue la última vez que se cambió.
+    last_updated = models.DateTimeField(auto_now=True)  # Para saber cuando fue la última vez que se cambió.
+
+    @property
+    def web(self): # TODO: No aparece en el serializador.
+        return "http://www.unavarra.es/pdi?uid=%d" % (self.upna_id, )
+
+    def __str__(self):
+        return self.name
 
     class Meta:
         ordering = ('created',)
+        verbose_name = 'profesor'
+        verbose_name_plural = 'profesores'
 
 
 class TIC(models.Model):
@@ -47,8 +143,13 @@ class TIC(models.Model):
     name = models.CharField(max_length=100, blank=True, default='')
     icon = models.URLField(blank=True, default='')
     description = models.TextField(max_length=1000, blank=True, default='')
-    url = models.URLField(blank=True, default='')
-    last_updated = models.DateField(auto_now=True)  # Para saber cuándo fue la última vez que se cambió.
+    web = models.URLField(blank=True, default='')
+    last_updated = models.DateTimeField(auto_now=True)  # Para saber cuando fue la última vez que se cambió.
+
+    def __str__(self):
+        return self.name
 
     class Meta:
         ordering = ('created',)
+        verbose_name = 'TIC'
+        verbose_name_plural = 'TIC'

@@ -7,9 +7,10 @@ from rest_framework.routers import DefaultRouter
 # Create a router and register our viewsets with it.
 router = DefaultRouter()
 router.register(r'centers', views.CenterViewSet)
+router.register(r'degrees', views.DegreeViewSet)
+router.register(r'subjects', views.SubjectViewSet)
 router.register(r'teachers', views.TeacherViewSet)
 router.register(r'tics', views.TICViewSet)
-
 
 # The API URLs are now determined automatically by the router.
 # Additionally, we include the login URLs for the browsable API.

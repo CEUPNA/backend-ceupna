@@ -221,4 +221,4 @@ class SubjectsSpider(CrawlSpider):
             if isinstance(tag, Comment):
                 tag.extract()
 
-        return parsed_fields
+        return str(parsed_fields)
