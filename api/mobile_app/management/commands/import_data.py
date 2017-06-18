@@ -131,39 +131,47 @@ class Command(BaseCommand):
             # Se introducen los demás datos, sustituyendo siempre los anteriores.
             # TODO: Revisar qué hacer para las actualizaciones... no tiene sentido actualizar con datos que ya están.
             if s['name'] is None:
-                subject.name = ""
+                if subject.name is None:
+                    subject.name = ""
             else:
                 subject.name = s['name']
 
             if s['credits'] is None:
-                subject.credits = 0
+                if subject.credits is None:
+                    subject.credits = 0
             else:
                 subject.credits = s['credits']
 
             if s['semester'] is None:
-                subject.semester = 0
+                if subject.semester is None:
+                    subject.semester = 0
             else:
                 subject.semester = s['semester']
 
             if s['type'] is None:
-                subject.type = ""
+                if subject.type is None:
+                    subject.type = ""
             else:
                 subject.type = s['type']
 
             subject.language = s['language']
 
             if s['department'] is None:
-                subject.department = ""
+                if subject.department is None:
+                    subject.department = ""
             else:
                 subject.department = s['department']
 
             if s['year'] is None:
-                subject.year = 0
+                if subject.year is None:
+                    subject.year = 0
             else:
                 subject.year = s['year']
 
+            degree = None
             try:
-                degree = Degree.objects.get(upna_id=s['degree_id'])
+                if s['degree_id'] is not None:
+                    degree = Degree.objects.get(upna_id=s['degree_id'])
             except Degree.DoesNotExist:
                 degree = None
                 warnings.warn("La titulación que ha indicado para la asignatura %d no existe en la base de datos."
@@ -175,24 +183,26 @@ class Command(BaseCommand):
                 pass
             else:
                 for t_id in s['teachers']:
-                    print(t_id)
                     try:
                         subject.teachers.add(Teacher.objects.get(upna_id=t_id))
                     except Teacher.DoesNotExist:
                         warnings.warn("No está el profesor en cuestión")
 
             if s['contents'] is None:
-                subject.contents = ""
+                if subject.contents is None:
+                    subject.contents = ""
             else:
                 subject.contents = s['contents']
 
             if s['curriculum'] is None:
-                subject.curriculum = ""
+                if subject.contents is None:
+                    subject.curriculum = ""
             else:
                 subject.curriculum = s['curriculum']
 
             if s['evaluation'] is None:
-                subject.evaluation = ""
+                if subject.evaluation is None:
+                    subject.evaluation = ""
             else:
                 subject.evaluation = s['evaluation']
 

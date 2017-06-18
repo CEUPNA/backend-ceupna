@@ -27,9 +27,9 @@ class SubjectsSpider(CrawlSpider):
     name = "subjects"
     allowed_domains = ["unavarra.es"]
 
-    # TODO: generar las URL
+    # Bases para las URL
     base = 'http://www.unavarra.es'
-    centersAndDegrees = ['fac-economicas/grado-en-economia',
+    centers_and_degrees = ['fac-economicas/grado-en-economia',
                          'fac-economicas/grado-en-administracion-y-direccion-de-empresas',
                          'fac-economicas/grado-en-administracion-y-direccion-de-empresas-y-derecho-doble-grado',
                          'fac-economicas/programa-internacional-grado-ade',
@@ -41,42 +41,45 @@ class SubjectsSpider(CrawlSpider):
                          'ets-industrialesytelecos/grado-ingenieria-electrica-electronica',
                          'ets-industrialesytelecos/grado-ingenieria-mecanica',
                          'ets-industrialesytelecos/grado-en-ingenieria-en-disenio-mecanico-campus-de-tudela',
+                         'ets-industrialesytelecos/programa-internacional-ingenieria-informatica',
+                         'ets-industrialesytelecos/programa-internacional-ingenieria-tecnologias-industriales'
+                         'ets-industrialesytelecos/programa-internacional-telecomunicacion'
                          'fac-humanasysociales/grado-de-maestro-en-educacion-infantil',
                          'fac-humanasysociales/grado-de-maestro-en-educacion-primaria',
                          'fac-humanasysociales/grado-en-sociolog%C3%ADa-aplicada',
                          'fac-humanasysociales/grado-en-trabajo-social',
-                         'fac-humanasysociales/',
-                         'fac-humanasysociales/',
                          'fac-juridicas/grado-en-derecho',
                          'fac-juridicas/grado-en-relaciones-laborales-y-recursos-humanos',
                          'fac-cienciasdelasalud/grado-en-enfermeria',
                          'fac-cienciasdelasalud/grado-en-fisioterapia-campus-de-tudela',
-                         'ets-agronomos/',
-                         'ets-agronomos/',
-                         'ets-agronomos/']
+                         'ets-agronomos/grado-en-ingenieria-agroalimentaria-y-del-medio-rural',
+                         'ets-agronomos/grado-innovacion-procesos-productos-alimentarios',
+                         'ets-agronomos/doble-grado-iamr-ippa']
     others = ['fac-humanasysociales/estudios/grado/haur-hezkuntzako-irakasleen-gradua/irakasgaien-zerrenda',
-              'fac-humanasysociales/estudios/grado/haur-hezkuntzako-irakasleen-gradua/ingelesezko-irakasgaien-eskaintza',
+              #'fac-humanasysociales/estudios/grado/haur-hezkuntzako-irakasleen-gradua/ingelesezko-irakasgaien-eskaintza',
               'fac-humanasysociales/estudios/grado/lehen-hezkuntzako-irakasleen-gradua/irakasgaien-zerrenda',
-              'fac-humanasysociales/estudios/grado/lehen-hezkuntzako-irakasleen-gradua/ingelesezko-irakasgaien-eskaintza']
+              #'fac-humanasysociales/estudios/grado/lehen-hezkuntzako-irakasleen-gradua/ingelesezko-irakasgaien-eskaintza'
+              ]
+    types_subs = ['lista-asignaturas', 'oferta-de-asignaturas-en-ingles', 'ofertas-de-asignaturas-en-euskera']
 
-    # centers = ['ets-agronomos', 'ets-industrialesytelecos', 'fac-economicas', 'fac-humanasysociales', 'fac-juridicas',
-    #            'fac-cienciasdelasalud']
-    # typeDegree = ['grado']
+    # Generación de las URL
+    start_urls = []
+    for centre_degree in centers_and_degrees:
+        for type_sub in types_subs:
+            cd_split = centre_degree.split('/')
+            start_urls.append(base + '/' + cd_split[0] + '/estudios/grado/' + cd_split[1] + '/' + type_sub)
 
+    for other in others:
+        start_urls.append(base + '/' + other)
 
-    typesSubs = ['lista-asignaturas', 'oferta-de-asignaturas-en-ingles', 'ofertas-de-asignaturas-en-euskera']
-
- #   urls = [base + centersAndDegrees + typesSubs]  # TODO: Revisar que esto hace una combinatoria total.
-
-
-    start_urls = ["http://www.unavarra.es/ets-industrialesytelecos/estudios/grado/grado-en-ingenieria-informatica/lista-asignaturas"]
+#    start_urls = ["http://www.unavarra.es/ets-industrialesytelecos/estudios/grado/grado-en-ingenieria-informatica/lista-asignaturas"]
 #    start_urls = ["http://www.unavarra.es/fac-cienciasdelasalud/estudios/grado/grado-en-enfermeria/lista-asignaturas"]
 #    start_urls = ['http://www.unavarra.es/fac-economicas/estudios/grado/grado-en-administracion-y-direccion-de-empresas-y-derecho-doble-grado/oferta-de-asignaturas-en-ingles']
 #    start_urls = ['http://www.unavarra.es/fac-humanasysociales/estudios/grado/grado-de-maestro-en-educacion-infantil/oferta-de-asignaturas-en-euskera']
 
     rules = (
-        Rule(LinkExtractor(allow=('.*',), restrict_xpaths=('//table[contains(@class, "listadoAsignaturas")]/tbody/tr/td[3]'),
-                           ),  # process_value=lambda x: x + addition_url),
+        Rule(LinkExtractor(allow=('.*',),
+                           restrict_xpaths=('//table[contains(@class, "listadoAsignaturas")]/tbody/tr/td[3]'),),
                            callback='parse_subject'),
     )
 
@@ -101,6 +104,10 @@ class SubjectsSpider(CrawlSpider):
         else:
             language = None
 
+        # Para el grado de económicas que repite código. Suponemos que el internacional de ADE asecas es el 174.
+        if 'programa-internacional-grado-ade' in response.url:
+            degree_id = 174
+
         # Extracción de los campos de la cajetilla superior de datos básicos.
         table_basic_data = '//div[@class="contenedorSombraFicha"]/table/tbody'
 
@@ -122,7 +129,7 @@ class SubjectsSpider(CrawlSpider):
         # Si la asignatura existe, cogemos el resto de los datos
         else:
             name = response.xpath(table_basic_data + '/tr/td[2]/text()').extract_first()  # Base del nombre.
-            name = ' '.join(name.title().split())
+            name = self._clean_names(name)
             ects = float(response.xpath(table_basic_data + '/tr[2]/td/text()').extract_first())
             kind_subj_base = response.xpath(table_basic_data + '/tr[2]/td[2]/text()').extract_first().strip()
             if kind_subj_base in LITERAL_BASIC:
@@ -222,3 +229,11 @@ class SubjectsSpider(CrawlSpider):
                 tag.extract()
 
         return str(parsed_fields)
+
+    @staticmethod
+    def _clean_names(name):
+
+        name = ' '.join(name.title().split()).replace(" De ", " de ").replace(" Del ", " del ").replace(" La ", " la ")
+        name.replace(" A ", " a ").replace(" Ii", " II").replace(" Iii", " III").replace(" Iv", " IV")
+        name.replace(" Y ", " y ").replace(" En ", " en ").replace(" El ", " el ")
+        return name
