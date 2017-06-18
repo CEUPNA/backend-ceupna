@@ -105,8 +105,10 @@ class SubjectsSpider(CrawlSpider):
             language = None
 
         # Para el grado de económicas que repite código. Suponemos que el internacional de ADE asecas es el 174.
-        if 'programa-internacional-grado-ade' in response.url:
+        orig_url = str(response.request.headers.get('referer', None))
+        if 'programa-internacional-grado-ade' in orig_url:  # El bug está aquí pq no se refiere a la url correcta.
             degree_id = 174
+
 
         # Extracción de los campos de la cajetilla superior de datos básicos.
         table_basic_data = '//div[@class="contenedorSombraFicha"]/table/tbody'
