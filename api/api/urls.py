@@ -22,4 +22,5 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^', include('mobile_app.urls')),
     url(r'^robots.txt$', lambda r: HttpResponse("User-agent: *\nDisallow: /", content_type="text/plain")),
+    url(r'^docs/', include('rest_framework_docs.urls')),
 ]
