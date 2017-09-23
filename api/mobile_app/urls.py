@@ -9,7 +9,7 @@ router = DefaultRouter()
 router.register(r'centers', views.CenterViewSet)
 router.register(r'degrees', views.DegreeViewSet)
 router.register(r'subjects', views.SubjectViewSet)
-router.register(r'teachers', views.TeacherViewSet)
+router.register(r'teachers', views.TeacherViewSet, base_name='teachers')
 router.register(r'tics', views.TICViewSet)
 
 # The API URLs are now determined automatically by the router.

@@ -36,7 +36,13 @@ class SubjectSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class TeacherSerializer(serializers.ModelSerializer):
+class TeacherSerializerList(serializers.ModelSerializer):
+    class Meta:
+        model = Teacher
+        fields = ('id', 'name',)
+
+
+class TeacherSerializerDetail(serializers.ModelSerializer):
     web = serializers.ReadOnlyField()  # Campos generados al vuelo.
 
     class Meta:
@@ -44,7 +50,13 @@ class TeacherSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class TICSerializer(serializers.ModelSerializer):
+class TICSerializerList(serializers.ModelSerializer):
+    class Meta:
+        model = TIC
+        fields = ('id', 'name', 'icon')
+
+
+class TICSerializerDetail(serializers.ModelSerializer):
     class Meta:
         model = TIC
         fields = '__all__'

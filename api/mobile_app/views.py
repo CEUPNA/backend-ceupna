@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from .models import Center, Degree, Subject, Teacher, TIC
-from .serializers import CenterSerializer, DegreeSerializer, SubjectSerializer, TeacherSerializer, TICSerializer
+from .serializers import CenterSerializer, DegreeSerializer, SubjectSerializer, TeacherSerializerList, TeacherSerializerDetail, TICSerializerList, TICSerializerDetail
 from rest_framework import viewsets
 
 
@@ -37,9 +37,6 @@ class TeacherViewSet(viewsets.ReadOnlyModelViewSet):
     """
     Listado y vista en detalle de los profesores de la Universidad
     """
-    queryset = Teacher.objects.all()
-    serializer_class = TeacherSerializer
-
     def get_queryset(self):
         """
         Método para gestionar la búsqueda de profesores por nombre.
@@ -49,11 +46,24 @@ class TeacherViewSet(viewsets.ReadOnlyModelViewSet):
         queryset = Teacher.objects.all()
         name = self.request.query_params.get('name', None)
         upna_id = self.request.query_params.get('upna_id', None)
+        degree_id = self.request.query_params.get('degree_id', None)
         if name is not None:
             queryset = queryset.filter(name__icontains=name)
-        elif upna_id is not None:
+        if upna_id is not None:
             queryset = queryset.filter(upna_id__exact=upna_id)
+        if degree_id is not None:
+            queryset = queryset.filter(subject__degree__upna_id__exact=degree_id).distinct()
         return queryset
+
+    def get_serializer_class(self):
+        """
+        Método para permitir disponer de los argumentos adecuados en la vista de lista y de detalle.
+        :return: El serializador correcto según el tipo de petición.
+        """
+        if(self.action == 'list'):
+            return TeacherSerializerList
+        else:
+            return TeacherSerializerDetail
 
 
 class TICViewSet(viewsets.ReadOnlyModelViewSet):
@@ -61,4 +71,14 @@ class TICViewSet(viewsets.ReadOnlyModelViewSet):
     Listado y vista en detalle de los recursos TIC de la Universidad.
     """
     queryset = TIC.objects.all()
-    serializer_class = TICSerializer
+
+    def get_serializer_class(self):
+        """
+        Método para permitir disponer de los argumentos adecuados en la vista de lista y de detalle.
+        :return: El serializador correcto según el tipo de petición.
+        """
+        if(self.action == 'list'):
+            return TICSerializerList
+        else:
+            return TICSerializerDetail
+#    serializer_class = TICSerializer

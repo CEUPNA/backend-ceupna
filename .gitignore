@@ -6,10 +6,9 @@
 *.csv
 
 # Crawler en scrapy (python)
-/crawler/*.html
-/crawler/data
-/.scrapy
-/.scrapy.old
+crawler/*.html
+crawler/data
+.scrapy.*
 
 # Backend Django
 db.sqlite3
@@ -17,3 +16,21 @@ api/key.txt
 
 # Para el IDE ‘PyCharm’
 .idea
+
+# Ficheros de SSOO
+*.~*
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Producción
+*.old
+local_settings.py
+env/
+logs/
+api/static/
+api/gunicorn_start

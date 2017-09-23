@@ -5,7 +5,6 @@ from django.db import models
 LANGUAGES = [('es', 'Español'), ('en', 'Inglés'),  ('eus', 'Euskera'), ('fr', 'Francés')]
 TYPE_SUBJ = [('ba', 'Básica'), ('ob', 'Obligatoria'),  ('op', 'Optativa')]
 
-
 class Center(models.Model):
     """
     Clase para la representación de un centro universitario.
@@ -39,7 +38,7 @@ class Degree(models.Model):
     name_es = models.CharField(max_length=150, blank=True, default='')
     name_eus = models.CharField(max_length=150, blank=True, default='')
     name_en = models.CharField(max_length=150, blank=True, default='')
-    language = models.CharField(max_length=3, blank=True, default='', choices=LANGUAGES)  # TODO: Si es internacional, poner a inglés.
+    language = models.CharField(max_length=3, blank=True, default='', choices=LANGUAGES)
     web = models.URLField(max_length=200, blank=True, default='')
     bachelor = models.BooleanField(default=False)
     international_prog = models.BooleanField(default=False)
@@ -119,11 +118,11 @@ class Teacher(models.Model):
     name = models.CharField(max_length=100, blank=True, default='')
     email = models.EmailField(max_length=100, blank=True, default='', unique=True)
     telephone = models.CharField(max_length=30, blank=True, default='')
-    timetable = models.TextField(max_length=100000, blank=True, default='')  # TODO: Hacer algo con la longitud.
+    timetable = models.TextField(blank=True, default='')
     last_updated = models.DateTimeField(auto_now=True)  # Para saber cuando fue la última vez que se cambió.
 
     @property
-    def web(self): # TODO: No aparece en el serializador.
+    def web(self):
         return "http://www.unavarra.es/pdi?uid=%d" % (self.upna_id, )
 
     def __str__(self):
