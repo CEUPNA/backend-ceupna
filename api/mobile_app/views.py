@@ -17,7 +17,7 @@ class DegreeViewSet(viewsets.ReadOnlyModelViewSet):
     """
     Listado y vista en detalle de las titulaciones de la Universidad.
     """
-    queryset = Degree.objects.all()
+    queryset = Degree.objects.prefetch_related('center').all()
     serializer_class = DegreeSerializer
 
     #TODO: HAcer algo para ver los grados dado el código de un cierto centro.

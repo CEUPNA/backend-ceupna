@@ -4,26 +4,36 @@ from rest_framework import serializers
 from .models import Center, Degree, Subject, Teacher, TIC
 
 
-class CenterNameSerializer(serializers.ModelSerializer):
+class NameSerializer(serializers.Serializer):
+    es = serializers.CharField(source='name_es')
+    eus = serializers.CharField(source='name_eus')
+    en = serializers.CharField(source='name_en')
+
     class Meta:
-        model = Center
-        fields = ('name_es', 'name_eus', 'name_en')
+        fields = ('es', 'eus', 'en')
 
 
 class CenterSerializer(serializers.ModelSerializer):
-    # name = CenterNameSerializer()
+    name = serializers.SerializerMethodField()
+
+    def get_name(self, obj):
+        return NameSerializer(obj).data
+
     class Meta:
         model = Center
-        fields = '__all__'
-        # fields = ('name', 'web', 'email')
-
+        exclude = ('name_es', 'name_eus', 'name_en')
 
 class DegreeSerializer(serializers.ModelSerializer):
+    name = serializers.SerializerMethodField()
+    center = CenterSerializer(many=True)
+
+    def get_name(self, obj):
+        return NameSerializer(obj).data
+
     class Meta:
         model = Degree
         depth = 1
-        fields = '__all__'
-#        exclude = ('created',)
+        exclude = ('name_es', 'name_eus', 'name_en')
 
 
 class SubjectSerializer(serializers.ModelSerializer):
