@@ -36,7 +36,14 @@ class DegreeSerializer(serializers.ModelSerializer):
         exclude = ('name_es', 'name_eus', 'name_en')
 
 
-class SubjectSerializer(serializers.ModelSerializer):
+
+class SubjectListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Subject
+        fields = ('id', 'name',)
+
+
+class SubjectDetailSerializer(serializers.ModelSerializer):
     web = serializers.ReadOnlyField()  # Campos generados al vuelo.
     bibliography = serializers.ReadOnlyField()
 
@@ -46,13 +53,13 @@ class SubjectSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class TeacherSerializerList(serializers.ModelSerializer):
+class TeacherListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Teacher
         fields = ('id', 'name',)
 
 
-class TeacherSerializerDetail(serializers.ModelSerializer):
+class TeacherDetailSerializer(serializers.ModelSerializer):
     web = serializers.ReadOnlyField()  # Campos generados al vuelo.
 
     class Meta:
@@ -60,13 +67,13 @@ class TeacherSerializerDetail(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class TICSerializerList(serializers.ModelSerializer):
+class TICListSerializer(serializers.ModelSerializer):
     class Meta:
         model = TIC
         fields = ('id', 'name', 'icon')
 
 
-class TICSerializerDetail(serializers.ModelSerializer):
+class TICDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = TIC
         fields = '__all__'

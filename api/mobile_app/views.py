@@ -28,9 +28,19 @@ class SubjectViewSet(viewsets.ReadOnlyModelViewSet):
     Listado y vista en detalle de las asignaturas de las titulaciones de la Universidad.
     """
     queryset = Subject.objects.all()
-    serializer_class = SubjectSerializer
+#    serializer_class = SubjectSerializer
 
     #TODO: HAcer algo para ver las asignaturas dado el código de un cierto grado.
+
+    def get_serializer_class(self):
+        """
+        Método para permitir disponer de los argumentos adecuados en la vista de lista y de detalle.
+        :return: El serializador correcto según el tipo de petición.
+        """
+        if(self.action == 'list'):
+            return SubjectListSerializer
+        else:
+            return SubjectDetailSerializer
 
 
 class TeacherViewSet(viewsets.ReadOnlyModelViewSet):
@@ -61,9 +71,9 @@ class TeacherViewSet(viewsets.ReadOnlyModelViewSet):
         :return: El serializador correcto según el tipo de petición.
         """
         if(self.action == 'list'):
-            return TeacherSerializerList
+            return TeacherListSerializer
         else:
-            return TeacherSerializerDetail
+            return TeacherDetailSerializer
 
 
 class TICViewSet(viewsets.ReadOnlyModelViewSet):
@@ -78,7 +88,7 @@ class TICViewSet(viewsets.ReadOnlyModelViewSet):
         :return: El serializador correcto según el tipo de petición.
         """
         if(self.action == 'list'):
-            return TICSerializerList
+            return TICListSerializer
         else:
-            return TICSerializerDetail
+            return TICDetailSerializer
 #    serializer_class = TICSerializer

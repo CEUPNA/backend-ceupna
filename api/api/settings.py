@@ -31,6 +31,8 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'corsheaders',
+    'debug_toolbar',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -43,6 +45,8 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -127,6 +131,9 @@ STATIC_URL = '/static/'
 # REST_FRAMEWORK_DOCS = {
 #     'HIDE_DOCS': True
 # }
+
+# TODO: Revisar cómo hacerlo.
+CORS_ORIGIN_ALLOW_ALL = True
 
 # Para incluir el fichero con las restricciones en el despliegue
 try:
