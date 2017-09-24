@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
 from .models import Center, Degree, Subject, Teacher, TIC
-from .serializers import CenterSerializer, DegreeSerializer, SubjectSerializer, TeacherSerializerList, TeacherSerializerDetail, TICSerializerList, TICSerializerDetail
+from .serializers import CenterSerializer, DegreeSerializer, RepresentativeSerializer, SubjectDetailSerializer, \
+    SubjectListSerializer, TeacherDetailSerializer, TeacherListSerializer, TICDetailSerializer, TICListSerializer
 from rest_framework import viewsets
 
 
