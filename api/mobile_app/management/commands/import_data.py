@@ -120,93 +120,108 @@ class Command(BaseCommand):
 
         # Se va iterando sobre los elementos que se van encontrando entre los datos extraídos del JSON.
         for s in subjects_data:
-            # Si la titulación ya existe en la base de datos se obtiene el objeto relacionado.
-            try:
-                subject = Subject.objects.get(upna_id=s['subject_id'])
-            # Si el profesor es nuevo, se crea un nuevo objeto para introducirlo en la BBDD.
-            except Subject.DoesNotExist:
-                subject = Subject()
-                subject.upna_id = s['subject_id']
-
-            # Se introducen los demás datos, sustituyendo siempre los anteriores.
-            # TODO: Revisar qué hacer para las actualizaciones... no tiene sentido actualizar con datos que ya están.
-            if s['name'] is None:
-                if subject.name is None:
-                    subject.name = ""
+            if s['degree_id'] == 301 or s['degree_id'] == 302:
+                pass # TODO: Encontrar una forma para evitar este if al redefinir los números de los grados de magisterio.
             else:
-                subject.name = s['name']
 
-            if s['credits'] is None:
-                if subject.credits is None:
-                    subject.credits = 0
-            else:
-                subject.credits = s['credits']
+                # Si la titulación ya existe en la base de datos se obtiene el objeto relacionado.
+                try:
+                    subject = Subject.objects.get(upna_id=s['subject_id'])
+                # Si el profesor es nuevo, se crea un nuevo objeto para introducirlo en la BBDD.
+                except Subject.DoesNotExist:
+                    subject = Subject()
+                    subject.upna_id = s['subject_id']
 
-            if s['semester'] is None:
-                if subject.semester is None:
-                    subject.semester = 0
-            else:
-                subject.semester = s['semester']
+                print(subject.id)
 
-            if s['type'] is None:
-                if subject.type is None:
-                    subject.type = ""
-            else:
-                subject.type = s['type']
+                # Se introducen los demás datos, sustituyendo siempre los anteriores.
+                # TODO: Revisar qué hacer para las actualizaciones... no tiene sentido actualizar con datos que ya están.
+                if s['name'] is None:
+                    if subject.name is None:
+                        subject.name = ""
+                else:
+                    subject.name = s['name']
 
-            subject.language = s['language']
+                if s['credits'] is None:
+                    if subject.credits is None:
+                        subject.credits = 0
+                else:
+                    subject.credits = s['credits']
 
-            if s['department'] is None:
-                if subject.department is None:
-                    subject.department = ""
-            else:
-                subject.department = s['department']
-
-            if s['year'] is None:
-                if subject.year is None:
-                    subject.year = 0
-            else:
-                subject.year = s['year']
-
-            degree = None
-            try:
-                if s['degree_id'] is not None:
-                    degree = Degree.objects.get(upna_id=s['degree_id'])
-            except Degree.DoesNotExist:
-                degree = None
-                warnings.warn("La titulación que ha indicado para la asignatura %d no existe en la base de datos."
-                              "Por favor, solucione este problema antes de introducir la asignatura." % subject.upna_id)
-            subject.degree = degree
-
-            subject.teachers.clear()
-            if s['teachers'] is None:
-                pass
-            else:
-                for t_id in s['teachers']:
+                if s['semester'] is None:
+                    if subject.semester is None:
+                        subject.semester = 0
+                else: # NOTE: Arreglo para los archivos JSON mal generados.
                     try:
-                        subject.teachers.add(Teacher.objects.get(upna_id=t_id))
-                    except Teacher.DoesNotExist:
-                        warnings.warn("No está el profesor en cuestión")
+                        sem = int(s['semester'])
+                    except Exception:
+                        sem = 0
 
-            if s['contents'] is None:
-                if subject.contents is None:
-                    subject.contents = ""
-            else:
-                subject.contents = s['contents']
+                    subject.semester = sem
 
-            if s['curriculum'] is None:
-                if subject.contents is None:
-                    subject.curriculum = ""
-            else:
-                subject.curriculum = s['curriculum']
+                if s['type'] is None:
+                    if subject.type is None:
+                        subject.type = ""
+                else:
+                    subject.type = s['type']
 
-            if s['evaluation'] is None:
-                if subject.evaluation is None:
-                    subject.evaluation = ""
-            else:
-                subject.evaluation = s['evaluation']
+                if s['language'] is None:
+                    if subject.language is None:
+                        subject.language = ""
+                else:
+                    subject.language = s['language']
 
-            subject.save()
+                if s['department'] is None:
+                    if subject.department is None:
+                        subject.department = ""
+                else:
+                    subject.department = s['department']
+
+                if s['year'] is None:
+                    if subject.year is None:
+                        subject.year = 0
+                else:
+                    subject.year = s['year']
+
+                degree = None
+                try:
+                    if s['degree_id'] is not None:
+                        degree = Degree.objects.get(upna_id=s['degree_id'])
+                except Degree.DoesNotExist:
+                    degree = None
+                    warnings.warn("La titulación que ha indicado para la asignatura %d no existe en la base de datos."
+                                  "Por favor, solucione este problema antes de introducir la asignatura." % subject.upna_id)
+                subject.degree = degree
+
+                subject.teachers.clear()
+                if s['teachers'] is None:
+                    pass
+                else:
+                    for t_id in s['teachers']:
+                        try:
+                            subject.teachers.add(Teacher.objects.get(upna_id=t_id))
+                        except Teacher.DoesNotExist:
+                            warnings.warn("No está el profesor en cuestión")
+
+                if s['contents'] is None:
+                    if subject.contents is None:
+                        subject.contents = ""
+                else:
+                    subject.contents = s['contents']
+
+                if s['curriculum'] is None:
+                    if subject.contents is None:
+                        subject.curriculum = ""
+                else:
+                    subject.curriculum = s['curriculum']
+
+                if s['evaluation'] is None:
+                    if subject.evaluation is None:
+                        subject.evaluation = ""
+                else:
+                    subject.evaluation = s['evaluation']
+                print(subject.name)
+                subject.save()
 
         if not subjects_data:
             self.stdout.write("No hay datos que incluir en el fichero que ha pasado.")
