@@ -9,6 +9,7 @@ router = DefaultRouter()
 router.register(r'centers', views.CenterViewSet)
 router.register(r'degrees', views.DegreeViewSet)
 router.register(r'subjects', views.SubjectViewSet)
+router.register(r'subjects', views.SubjectViewSet, base_name='subjects')
 router.register(r'teachers', views.TeacherViewSet, base_name='teachers')
 router.register(r'tics', views.TICViewSet)
 
