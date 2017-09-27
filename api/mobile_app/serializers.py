@@ -23,6 +23,7 @@ class CenterSerializer(serializers.ModelSerializer):
         model = Center
         exclude = ('name_es', 'name_eus', 'name_en')
 
+
 class DegreeSerializer(serializers.ModelSerializer):
     name = serializers.SerializerMethodField()
     center = CenterSerializer(many=True)

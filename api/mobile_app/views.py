@@ -27,19 +27,11 @@ class DegreeViewSet(viewsets.ReadOnlyModelViewSet):
             - Un subconjunto de las grado dado el id del centro.
         :return: Una subconjunto de las titulaciones con los criterios previstos.
         """
-        queryset = Subject.objects.all()
+        queryset = Degree.objects.all()
         center_id = self.request.query_params.get('center_id', None)
         if center_id is not None:
             queryset = queryset.filter(degree__center__center_id__exact=center_id).distinct()
         return queryset
-
-
-class RepresentativeViewSet(viewsets.ReadOnlyModelViewSet):
-    """
-    Listado y vista en detalle de los representantes de estudiantes de la Universidad
-    """
-    queryset = Representative.objects.all()
-    serializer_class = RepresentativeSerializer
 
 
 class SubjectViewSet(viewsets.ReadOnlyModelViewSet):
@@ -90,18 +82,22 @@ class TeacherViewSet(viewsets.ReadOnlyModelViewSet):
         Método para gestionar los filtros sobre las asignaturas. Puede pedirse:
             - Un subconjunto de los profesores dado un string que coincide total o parcialmente con su nombre.
             - Un subconjunto de los profesores dado el identificador que se les concede en la UPNA.
-            - Un subconjunto de las asignatruas dado el id del grado que utiliza la UPNA.
+            - Un subconjunto de las asignaturas dado el id del grado que utiliza la base de datos.
+            - Un subconjunto de las asignaturas dado el id del grado que utiliza la UPNA.
         :return: Una subconjunto de los profesores con los criterios previstos.
         """
         queryset = Teacher.objects.all()
         name = self.request.query_params.get('name', None)
         upna_id = self.request.query_params.get('upna_id', None)
         degree_id = self.request.query_params.get('degree_id', None)
+        upna_degree_id = self.request.query_params.get('upna_degree_id', None)
         if name is not None:
             queryset = queryset.filter(name__icontains=name)
         if upna_id is not None:
             queryset = queryset.filter(upna_id__exact=upna_id)
         if degree_id is not None:
+            queryset = queryset.filter(subject__degree__id__exact=degree_id).distinct()
+        if upna_degree_id is not None:
             queryset = queryset.filter(subject__degree__upna_id__exact=degree_id).distinct()
         return queryset
 
