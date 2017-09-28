@@ -91,6 +91,7 @@ class TeacherViewSet(viewsets.ReadOnlyModelViewSet):
         upna_id = self.request.query_params.get('upna_id', None)
         degree_id = self.request.query_params.get('degree_id', None)
         upna_degree_id = self.request.query_params.get('upna_degree_id', None)
+        subject_id = self.request.query_params.get('subject_id', None)
         if name is not None:
             queryset = queryset.filter(name__icontains=name)
         if upna_id is not None:
@@ -99,6 +100,8 @@ class TeacherViewSet(viewsets.ReadOnlyModelViewSet):
             queryset = queryset.filter(subject__degree__id__exact=degree_id).distinct()
         if upna_degree_id is not None:
             queryset = queryset.filter(subject__degree__upna_id__exact=degree_id).distinct()
+        if subject_id is not None:
+            queryset = queryset.filter(subject__id=subject_id)
         return queryset
 
     def get_serializer_class(self):
@@ -106,7 +109,7 @@ class TeacherViewSet(viewsets.ReadOnlyModelViewSet):
         Método para permitir disponer de los argumentos adecuados en la vista de lista y de detalle.
         :return: El serializador correcto según el tipo de petición.
         """
-        if self.action == 'list':
+        if self.action == 'list' and self.request.query_params.get('subject_id', None) is None:
             return TeacherListSerializer
         else:
             return TeacherDetailSerializer
