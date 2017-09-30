@@ -4,6 +4,8 @@ from django.db import models
 
 LANGUAGES = [('es', 'Español'), ('en', 'Inglés'),  ('eus', 'Euskera'), ('fr', 'Francés')]
 TYPE_SUBJ = [('ba', 'Básica'), ('ob', 'Obligatoria'),  ('op', 'Optativa')]
+EVENT_SCHEDULE = [('inst', 'Institucional'), ('ceupna', 'Consejo de Estudiantes')]
+EVENT_TAG = [('ens', 'Enseñanzas'), ('est', 'Estudiantes'),  ('gen', 'General')]
 
 class Center(models.Model):
     """
@@ -64,6 +66,28 @@ class Degree(models.Model):
         verbose_name_plural = 'titulaciones'
 
 
+class Event(models.Model):
+    """
+    Clase para la representación de una actividad.
+    """
+    created = models.DateTimeField(auto_now_add=True)
+    active = models.BooleanField(default=True)
+    name = models.CharField(max_length=200, blank=True, default='')
+    ical_id = models.CharField(max_length=100, blank=True, default='')
+    begin_date = models.DateTimeField(blank=False)
+    end_date = models.DateTimeField(blank=False)
+    description = models.TextField(blank=True, default='')
+    schedule = models.CharField(max_length=6, blank=False, default='', choices=EVENT_SCHEDULE)
+    tag = models.CharField(max_length=10, blank=True, default='', choices=EVENT_TAG)
+    last_updated = models.DateTimeField(auto_now=True)  # Para saber cuando fue la última vez que se cambió.
+
+    def __str__(self):
+        return self.name + ' - ' + self.begin_date.__str__() + ' - ' + self.end_date.__str__()
+
+    class Meta:
+        ordering = ('created',)
+        verbose_name = 'actividad'
+        verbose_name_plural = 'actividades'
 class Subject(models.Model):
     """
     Clase para la representación de una asignatura de un cierto grado o máster.

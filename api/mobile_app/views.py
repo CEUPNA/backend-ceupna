@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from .models import Center, Degree, Subject, Teacher, TIC
-from .serializers import CenterSerializer, DegreeSerializer, SubjectDetailSerializer, \
+from .models import Center, Degree, Event, Subject, Teacher, TIC
+from .serializers import CenterSerializer, DegreeSerializer, EventSerializer, SubjectDetailSerializer, \
     SubjectListSerializer, TeacherDetailSerializer, TeacherListSerializer, TICDetailSerializer, TICListSerializer
 from rest_framework import viewsets
 
@@ -34,13 +34,34 @@ class DegreeViewSet(viewsets.ReadOnlyModelViewSet):
         return queryset
 
 
+class EventViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    Listado y vista en detalle de las actividades de la UPNA.
+    """
+    serializer_class = EventSerializer
+    queryset = Event.objects.all()
+
+
+class CEUPNAEventViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    Listado y vista en detalle de las actividades de la UPNA.
+    """
+    serializer_class = EventSerializer
+    queryset = Event.objects.all().filter(schedule__exact='ceupna')
+
+
+class InstEventViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    Listado y vista en detalle de las actividades de la UPNA.
+    """
+    serializer_class = EventSerializer
+    queryset = Event.objects.all().filter(schedule__exact='inst')
+
+
 class SubjectViewSet(viewsets.ReadOnlyModelViewSet):
     """
     Listado y vista en detalle de las asignaturas de las titulaciones de la Universidad.
     """
-    #queryset = Subject.objects.all()
-#    serializer_class = SubjectSerializer
-
     def get_queryset(self):
         """
         Método para gestionar los filtros sobre las asignaturas. Puede pedirse:

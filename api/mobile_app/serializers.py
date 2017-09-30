@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from rest_framework import serializers
-from .models import Center, Degree, Subject, Teacher, TIC
+from .models import Center, Degree, Event, Subject, Teacher, TIC
 
 
 class NameSerializer(serializers.Serializer):
@@ -35,6 +35,12 @@ class DegreeSerializer(serializers.ModelSerializer):
         model = Degree
         depth = 1
         exclude = ('name_es', 'name_eus', 'name_en')
+
+class EventSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Event
+        fields = '__all__'
+
 
 
 
