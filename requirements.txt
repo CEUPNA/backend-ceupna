@@ -4,4 +4,7 @@ Scrapy==1.3.3
 beautifulsoup4==4.5.3
 drfdocs==0.0.11
 django-debug-toolbar==1.8
+django-corsheaders=0.1
 django-cors-headers==2.1.0
+Pillow==4.2.1
+requests==2.18.1

@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
 
-from .models import Center, Degree, Event, Subject, Teacher, TIC
-from .serializers import CenterSerializer, DegreeSerializer, EventSerializer, SubjectDetailSerializer, \
-    SubjectListSerializer, TeacherDetailSerializer, TeacherListSerializer, TICDetailSerializer, TICListSerializer
 from rest_framework import viewsets
+from .models import TIC, Center, Degree, Event, Representative, Subject, Teacher
+from .serializers import (BusSerializer, CenterSerializer, DegreeSerializer,
+                          EventSerializer, RepresentativeSerializer,
+                          SubjectDetailSerializer, SubjectListSerializer,
+                          TeacherDetailSerializer, TeacherListSerializer,
+                          TICDetailSerializer, TICListSerializer)
 
 
 class CenterViewSet(viewsets.ReadOnlyModelViewSet):
@@ -56,6 +59,14 @@ class InstEventViewSet(viewsets.ReadOnlyModelViewSet):
     """
     serializer_class = EventSerializer
     queryset = Event.objects.all().filter(schedule__exact='inst')
+
+
+class RepresentativeViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    Listado y vista en detalle de los representantes de la Universidad
+    """
+    serializer_class = RepresentativeSerializer
+    queryset = Representative.objects.all()
 
 
 class SubjectViewSet(viewsets.ReadOnlyModelViewSet):

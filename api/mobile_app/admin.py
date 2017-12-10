@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 
-from .models import Center, Degree, Event, Subject, Teacher, TIC
 from django.contrib import admin
+
+from .models import (TIC, Center, Degree, Event, Representative, Subject,
+                     Teacher)
 
 # Register your models here.
 
@@ -11,3 +13,4 @@ admin.site.register(Event)
 admin.site.register(TIC)
 admin.site.register(Subject)
 admin.site.register(Teacher)
+admin.site.register(Representative)

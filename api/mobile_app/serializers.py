@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 
 from rest_framework import serializers
-from .models import Center, Degree, Event, Subject, Teacher, TIC
+
+from .models import (TIC, Center, Degree, Event, Representative, Subject,
+                     Teacher)
 
 
 class NameSerializer(serializers.Serializer):
@@ -36,12 +38,17 @@ class DegreeSerializer(serializers.ModelSerializer):
         depth = 1
         exclude = ('name_es', 'name_eus', 'name_en')
 
+
 class EventSerializer(serializers.ModelSerializer):
     class Meta:
         model = Event
         fields = '__all__'
 
 
+class RepresentativeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Representative
+        fields = '__all__'
 
 
 class SubjectListSerializer(serializers.ModelSerializer):
@@ -68,6 +75,8 @@ class TeacherListSerializer(serializers.ModelSerializer):
 
 class TeacherDetailSerializer(serializers.ModelSerializer):
     web = serializers.ReadOnlyField()  # Campos generados al vuelo.
+
+    #  subjects = serializers.ReadOnlyField()
 
     class Meta:
         model = Teacher

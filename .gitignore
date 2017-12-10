@@ -13,6 +13,7 @@ crawler/data
 # Backend Django
 db.sqlite3
 api/key.txt
+media/
 
 # Para el IDE ‘PyCharm’
 .idea

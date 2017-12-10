@@ -2,10 +2,11 @@
 
 from django.db import models
 
-LANGUAGES = [('es', 'Español'), ('en', 'Inglés'),  ('eus', 'Euskera'), ('fr', 'Francés')]
-TYPE_SUBJ = [('ba', 'Básica'), ('ob', 'Obligatoria'),  ('op', 'Optativa')]
+LANGUAGES = [('es', 'Español'), ('en', 'Inglés'), ('eus', 'Euskera'), ('fr', 'Francés')]
+TYPE_SUBJ = [('ba', 'Básica'), ('ob', 'Obligatoria'), ('op', 'Optativa')]
 EVENT_SCHEDULE = [('inst', 'Institucional'), ('ceupna', 'Consejo de Estudiantes')]
-EVENT_TAG = [('ens', 'Enseñanzas'), ('est', 'Estudiantes'),  ('gen', 'General')]
+EVENT_TAG = [('ens', 'Enseñanzas'), ('est', 'Estudiantes'), ('gen', 'General')]
+
 
 class Center(models.Model):
     """
@@ -88,6 +89,41 @@ class Event(models.Model):
         ordering = ('created',)
         verbose_name = 'actividad'
         verbose_name_plural = 'actividades'
+
+
+class Person(models.Model):
+    """
+    Clase abstracta para la representación de una persona.
+    """
+    created = models.DateTimeField(auto_now_add=True)
+    first_name = models.CharField(max_length=100, blank=True, default='', verbose_name='Nombre')
+    last_name = models.CharField(max_length=100, blank=True, default='', verbose_name='Apellidos')
+    email = models.EmailField(max_length=150, blank=True, default='', unique=True)
+    telephone = models.CharField(max_length=30, blank=True, default='')
+    last_updated = models.DateTimeField(auto_now=True)  # Para saber cuando fue la última vez que se cambió.
+
+    class Meta:
+        abstract = True
+
+
+class Representative(Person):
+    """
+    Clase para la representación de un representante de estudiantes.
+    """
+    photo = models.ImageField(blank=True, upload_to='representatives')
+    miaulario = models.CharField(max_length=100, blank=True, default='')
+    active = models.BooleanField(default=True)
+    #degree = models.ForeignKey('Degree', on_delete=models.CASCADE)  # TODO: ¿Y cuando ha tenido más de uno?
+    # Relaciones con el CE, Centros y Departamentos
+
+    def __str__(self):
+        return self.last_name + ', ' + self.first_name
+
+    class Meta:
+        ordering = ( 'created',)
+        verbose_name = 'representante'
+        verbose_name_plural = 'representantes'
+
 class Subject(models.Model):
     """
     Clase para la representación de una asignatura de un cierto grado o máster.
@@ -95,12 +131,13 @@ class Subject(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     upna_id = models.PositiveIntegerField()
     name = models.CharField(max_length=100, blank=True, default='')
-    credits = models.FloatField(default=0, blank=True,)
-    year = models.IntegerField(default=0, blank=True,)
-    semester = models.IntegerField(default=0, blank=True,)
+    credits = models.FloatField(default=0, blank=True, )
+    year = models.IntegerField(default=0, blank=True, )
+    semester = models.IntegerField(default=0, blank=True, )
     type = models.CharField(max_length=2, blank=True, default='', choices=TYPE_SUBJ)
     language = models.CharField(max_length=3, blank=True, default='', choices=LANGUAGES)
-    department = models.CharField(max_length=100, blank=True, default='') # A futuro tendrá que ser una clave extranjera.
+    department = models.CharField(max_length=100, blank=True,
+                                  default='')  # A futuro tendrá que ser una clave extranjera.
     degree = models.ForeignKey('Degree', on_delete=models.CASCADE)  # TODO: a uno y solo a uno???
     teachers = models.ManyToManyField('Teacher')
     last_updated = models.DateTimeField(auto_now=True)  # Para saber cuando fue la última vez que se cambió.
@@ -112,7 +149,7 @@ class Subject(models.Model):
 
     # Direcciones web generadas al vuelo.
     @property
-    def web(self):    # Para el idioma igual que la web de la UPNA
+    def web(self):  # Para el idioma igual que la web de la UPNA
         # return "http://www.unavarra.es/ficha-asignaturaDOA/?languageId=%d&codPlan=%d&codAsig=%d&anio=%d" \
         #        % (100000, self.degree.upna_id, self.upna_id, 2016)
         return "http://www.unavarra.es/ficha-asignaturaDOA/?codAsig=%d" \
@@ -133,24 +170,23 @@ class Subject(models.Model):
         verbose_name_plural = 'asignaturas'
 
 
-class Teacher(models.Model):
+class Teacher(Person):
     """
     Clase para la representación de un profesor.
     """
-    created = models.DateTimeField(auto_now_add=True)
     upna_id = models.PositiveIntegerField(unique=True)
-    name = models.CharField(max_length=100, blank=True, default='')
-    email = models.EmailField(max_length=100, blank=True, default='', unique=True)
-    telephone = models.CharField(max_length=30, blank=True, default='')
     timetable = models.TextField(blank=True, default='')
-    last_updated = models.DateTimeField(auto_now=True)  # Para saber cuando fue la última vez que se cambió.
 
     @property
     def web(self):
-        return "http://www.unavarra.es/pdi?uid=%d" % (self.upna_id, )
+        return "http://www.unavarra.es/pdi?uid=%d" % (self.upna_id,)
+
+    # @property
+    # def subjects(self):
+    #     return self.subject_set
 
     def __str__(self):
-        return self.name
+        return self.first_name
 
     class Meta:
         ordering = ('created',)
