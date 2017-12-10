@@ -6,6 +6,30 @@ from .models import (TIC, Center, Degree, Event, Representative, Subject,
                      Teacher)
 
 
+class BusTimetableSerializer(serializers.Serializer):
+    line = serializers.CharField()
+    time1 = serializers.CharField()
+    time2 = serializers.CharField(required=False)
+    direction = serializers.CharField(required=False)
+
+    class Meta:
+        fields = 'line', 'time1', 'time2', 'direction'
+
+
+class BusSerializer(serializers.Serializer):
+    stop_id = serializers.IntegerField()
+    stop_name = serializers.CharField()
+    stop_campus = serializers.CharField()
+    timetables = serializers.ListSerializer(child=BusTimetableSerializer())
+
+    def get_timetables(self, obj):
+        print(obj)
+        return BusTimetableSerializer(obj).data
+
+    class Meta:
+        fields = 'stop_id', 'stop_name', 'stop_campus', 'timetables'
+
+
 class NameSerializer(serializers.Serializer):
     es = serializers.CharField(source='name_es')
     eus = serializers.CharField(source='name_eus')

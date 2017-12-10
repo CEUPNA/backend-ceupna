@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 
-from django.conf.urls import url, include
-from . import views
+from django.conf.urls import include, url
 from rest_framework.routers import DefaultRouter
+
+from . import views
 
 # Create a router and register our viewsets with it.
 router = DefaultRouter()
+router.register(r'bus', views.BusViewSet, base_name='bus')
 router.register(r'centers', views.CenterViewSet)
 router.register(r'degrees', views.DegreeViewSet)
 router.register(r'events', views.EventViewSet, base_name='events')

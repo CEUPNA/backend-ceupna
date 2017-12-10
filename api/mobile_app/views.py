@@ -1,12 +1,29 @@
 # -*- coding: utf-8 -*-
 
 from rest_framework import viewsets
+from rest_framework.response import Response
+
+from.management.bus_timetable import get_bus_timetables
 from .models import TIC, Center, Degree, Event, Representative, Subject, Teacher
 from .serializers import (BusSerializer, CenterSerializer, DegreeSerializer,
                           EventSerializer, RepresentativeSerializer,
                           SubjectDetailSerializer, SubjectListSerializer,
                           TeacherDetailSerializer, TeacherListSerializer,
                           TICDetailSerializer, TICListSerializer)
+
+
+class BusViewSet(viewsets.GenericViewSet):
+    serializer_class = BusSerializer
+    queryset = list()
+
+    def list(self, request):
+        serializer = self.get_serializer(get_bus_timetables(), many=True)
+        return Response(serializer.data)
+
+    # def list(self, request):
+    #     d = {'line': 9}
+    #     bs = self.get_serializer(d)
+    #     return Response(bs.data)
 
 
 class CenterViewSet(viewsets.ReadOnlyModelViewSet):
@@ -73,6 +90,7 @@ class SubjectViewSet(viewsets.ReadOnlyModelViewSet):
     """
     Listado y vista en detalle de las asignaturas de las titulaciones de la Universidad.
     """
+
     def get_queryset(self):
         """
         Método para gestionar los filtros sobre las asignaturas. Puede pedirse:
@@ -109,6 +127,7 @@ class TeacherViewSet(viewsets.ReadOnlyModelViewSet):
     """
     Listado y vista en detalle de los profesores de la Universidad
     """
+
     def get_queryset(self):
         """
         Método para gestionar los filtros sobre las asignaturas. Puede pedirse:
