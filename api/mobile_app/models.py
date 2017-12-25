@@ -4,20 +4,20 @@ from django.db import models
 
 LANGUAGES = [('es', 'Español'), ('en', 'Inglés'), ('eus', 'Euskera'), ('fr', 'Francés')]
 TYPE_SUBJ = [('ba', 'Básica'), ('ob', 'Obligatoria'), ('op', 'Optativa')]
+#TYPE_RULES = [('ens', 'Enseñanzas'), ('est', 'Estudiantes'), ('gen', 'General')]
 EVENT_SCHEDULE = [('inst', 'Institucional'), ('ceupna', 'Consejo de Estudiantes')]
 EVENT_TAG = [('ens', 'Enseñanzas'), ('est', 'Estudiantes'), ('gen', 'General')]
+YEAR = [('1', 'Primero'), ('2', 'Segundo'), ('3', 'Tercero'), ('4', 'Cuarto'), ('5', 'Quinto'), ('6', 'Sexto')]
 
 
-class Center(models.Model):
+class Institution(models.Model):
     """
-    Clase para la representación de un centro universitario.
+    Clase para la representación de un órgano de la Universidad
     """
     created = models.DateTimeField(auto_now_add=True)
-    center_id = models.PositiveIntegerField(unique=True)
     name_es = models.CharField(max_length=100, blank=True, default='')
     name_eus = models.CharField(max_length=100, blank=True, default='')
     name_en = models.CharField(max_length=100, blank=True, default='')
-    acronym = models.CharField(max_length=10, blank=True, default='')
     email = models.EmailField(max_length=100, blank=True, default='')
     telephone = models.CharField(max_length=20, blank=True, default='')
     web = models.URLField(blank=True, default='')
@@ -25,6 +25,35 @@ class Center(models.Model):
 
     def __str__(self):
         return self.name_es
+
+    class Meta:
+        abstract = True
+
+
+class Department(Institution):
+    """
+    Clase para la representación de un departamento.
+    """
+    active = models.BooleanField(default=True)
+    director = models.ForeignKey('Teacher', on_delete=models.CASCADE)
+    representative_member = models.ManyToManyField(
+        'Representative',
+        limit_choices_to={'active': True},
+        blank=True
+    )
+
+    class Meta:
+        ordering = ('active', 'name_es',)
+        verbose_name = 'departamento'
+        verbose_name_plural = 'departamentos'
+
+
+class Center(Institution):
+    """
+    Clase para la representación de un centro universitario.
+    """
+    center_id = models.PositiveIntegerField(unique=True)
+    acronym = models.CharField(max_length=10, blank=True, default='')
 
     class Meta:
         ordering = ('created',)
@@ -113,16 +142,39 @@ class Representative(Person):
     photo = models.ImageField(blank=True, upload_to='representatives')
     miaulario = models.CharField(max_length=100, blank=True, default='')
     active = models.BooleanField(default=True)
+    claustral = models.BooleanField(default=False)
+    delegate = models.BooleanField(default=True)
     #degree = models.ForeignKey('Degree', on_delete=models.CASCADE)  # TODO: ¿Y cuando ha tenido más de uno?
+    year = models.CharField(max_length=1, blank=True, default='', choices=YEAR)
     # Relaciones con el CE, Centros y Departamentos
 
     def __str__(self):
-        return self.last_name + ', ' + self.first_name
+        return self.last_name.upper() + ', ' + self.first_name
 
     class Meta:
-        ordering = ( 'created',)
+        ordering = ('-active', 'last_name', 'first_name')
         verbose_name = 'representante'
         verbose_name_plural = 'representantes'
+
+#
+# class Rules(models.Model):
+#     """
+#     Clase para la representación de una normativa universitaria.
+#     """
+#     created = models.DateTimeField(auto_now_add=True)
+#     name_es = models.CharField(max_length=150, blank=True, default='')
+#     name_eus = models.CharField(max_length=150, blank=True, default='')
+#     name_en = models.CharField(max_length=150, blank=True, default='')
+#     last_version = models.URLField(blank=True)
+#     # previous_versions
+#     rule_group = models.CharField(max_length=3, blank=True, default='', choices=TYPE_RULES)
+#     last_updated = models.DateTimeField(auto_now=True)  # Para saber cuando fue la última vez que se cambió.
+#
+#     class Meta:
+#         ordering = ('created',)
+#         verbose_name = 'normativa'
+#         verbose_name_plural = 'normativas'
+
 
 class Subject(models.Model):
     """
@@ -189,7 +241,7 @@ class Teacher(Person):
         return self.first_name
 
     class Meta:
-        ordering = ('created',)
+        ordering = ('first_name', 'created',)
         verbose_name = 'profesor'
         verbose_name_plural = 'profesores'
 

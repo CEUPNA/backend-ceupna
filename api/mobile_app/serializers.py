@@ -2,7 +2,7 @@
 
 from rest_framework import serializers
 
-from .models import (TIC, Center, Degree, Event, Representative, Subject,
+from .models import (TIC, Center, Degree, Department, Event, Representative, Subject,
                      Teacher)
 
 
@@ -61,6 +61,13 @@ class DegreeSerializer(serializers.ModelSerializer):
         model = Degree
         depth = 1
         exclude = ('name_es', 'name_eus', 'name_en')
+
+
+class DepartmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Department
+        depth = 1
+        fields = '__all__'
 
 
 class EventSerializer(serializers.ModelSerializer):

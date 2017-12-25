@@ -4,8 +4,8 @@ from rest_framework import viewsets
 from rest_framework.response import Response
 
 from.management.bus_timetable import get_bus_timetables
-from .models import TIC, Center, Degree, Event, Representative, Subject, Teacher
-from .serializers import (BusSerializer, CenterSerializer, DegreeSerializer,
+from .models import TIC, Center, Degree, Department, Event, Representative, Subject, Teacher
+from .serializers import (BusSerializer, CenterSerializer, DegreeSerializer, DepartmentSerializer,
                           EventSerializer, RepresentativeSerializer,
                           SubjectDetailSerializer, SubjectListSerializer,
                           TeacherDetailSerializer, TeacherListSerializer,
@@ -52,6 +52,14 @@ class DegreeViewSet(viewsets.ReadOnlyModelViewSet):
         if center_id is not None:
             queryset = queryset.filter(degree__center__center_id__exact=center_id).distinct()
         return queryset
+
+
+class DepartmentViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    Listado y vista en detalle de los departamentos de la UPNA.
+    """
+    serializer_class = DepartmentSerializer
+    queryset = Department.objects.filter(active=True)
 
 
 class EventViewSet(viewsets.ReadOnlyModelViewSet):
