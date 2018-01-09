@@ -8,12 +8,14 @@ from .models import (TIC, Center, Degree, Department, Event, Representative, Sub
 
 class BusTimetableSerializer(serializers.Serializer):
     line = serializers.CharField()
-    time1 = serializers.CharField()
+    time1 = serializers.CharField(required=False)
     time2 = serializers.CharField(required=False)
     direction = serializers.CharField(required=False)
+    icon = serializers.CharField(required=False)
+    extra = serializers.CharField(required=False)
 
     class Meta:
-        fields = 'line', 'time1', 'time2', 'direction'
+        fields = 'line', 'time1', 'time2', 'direction', 'icon', 'extra'
 
 
 class BusSerializer(serializers.Serializer):

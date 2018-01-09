@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from django.db import models
+from django.utils import timezone
 
 LANGUAGES = [('es', 'Español'), ('en', 'Inglés'), ('eus', 'Euskera'), ('fr', 'Francés')]
 TYPE_SUBJ = [('ba', 'Básica'), ('ob', 'Obligatoria'), ('op', 'Optativa')]
@@ -35,7 +36,7 @@ class Department(Institution):
     Clase para la representación de un departamento.
     """
     active = models.BooleanField(default=True)
-    director = models.ForeignKey('Teacher', on_delete=models.CASCADE)
+    director = models.ForeignKey('Teacher', default=None, on_delete=models.CASCADE)
     representative_member = models.ManyToManyField(
         'Representative',
         limit_choices_to={'active': True},
@@ -135,6 +136,13 @@ class Person(models.Model):
         abstract = True
 
 
+class RepresentativeDegree(models.Model):
+    representative = models.ForeignKey('Representative', on_delete=models.CASCADE)
+    degree = models.ForeignKey('Degree', on_delete=models.CASCADE)
+    init_date = models.DateField(default=timezone.now)
+    end_date = models.DateField(blank=True, null=True)
+
+
 class Representative(Person):
     """
     Clase para la representación de un representante de estudiantes.
@@ -144,9 +152,10 @@ class Representative(Person):
     active = models.BooleanField(default=True)
     claustral = models.BooleanField(default=False)
     delegate = models.BooleanField(default=True)
-    #degree = models.ForeignKey('Degree', on_delete=models.CASCADE)  # TODO: ¿Y cuando ha tenido más de uno?
+    degree = models.ManyToManyField('Degree', through='RepresentativeDegree', through_fields=('representative', 'degree'))
+        #models.ForeignKey('Degree', default=None, blank=True, on_delete=models.CASCADE)  # TODO: ¿Y cuando ha tenido más de uno?
     year = models.CharField(max_length=1, blank=True, default='', choices=YEAR)
-    # Relaciones con el CE, Centros y Departamentos
+    # Las relaciones con cada uno de los sitios donde es representantes vienen en los otros modelos.
 
     def __str__(self):
         return self.last_name.upper() + ', ' + self.first_name

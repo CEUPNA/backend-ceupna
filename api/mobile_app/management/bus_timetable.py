@@ -19,7 +19,7 @@ def get_bus_timetables():
 
 
 def __get_pamplona_bus_timetables__():
-    list_timetable = list()
+    list_timetables = list()
 
     for s in stops:
         # Datos generales de la parada.
@@ -34,33 +34,31 @@ def __get_pamplona_bus_timetables__():
             stop_dict['stop_campus'] = 'unknow'
 
         # Extracción de todos los horarios y líneas para una cierta parada.
-        stop_dict['timetables'] = dict()
+        stop_dict['timetables'] = dict()  # Implementación cuando MCP dé respuesta.
 
-       # r = requests.post("https://www.infotuc.es/visor/v1/todasllegadas.php?parada=23")
+        # r = requests.post("https://www.infotuc.es/visor/v1/todasllegadas.php?parada=23")
         #str_cal = r.text
         #print(str_cal)
 
+        list_timetables.append(stop_dict)
 
-
-        list_timetable.append(stop_dict)
-
-    return list_timetable
+    return list_timetables
 
 
 def __get_tudela_bus_timetables__():
-    list_timetable = list()
+    list_timetables = list()
 
     # Primera línea
     stop_dict = dict()
     stop_dict['stop_id'] = 0
     stop_dict['stop_name'] = ''
     stop_dict['stop_campus'] = 'tudela'
-    l = list()
-    l.append({'time1': 'https://www.arasa.es/wp-content/uploads/2017/10/l220upnatudela.gif', 'line': 'Línea 2 (Roja)'})
-    stop_dict['timetables'] = l
-    list_timetable.append(stop_dict)
+    list_lines = list()
+    list_lines.append({'extra': 'https://www.arasa.es/wp-content/uploads/2017/10/l220upnatudela.gif', 'line': 'Línea 2 (Roja)'})
+    stop_dict['timetables'] = list_lines
+    list_timetables.append(stop_dict)
 
-    return list_timetable
+    return list_timetables
 
 
-print(get_bus_timetables())
+#print(get_bus_timetables())
