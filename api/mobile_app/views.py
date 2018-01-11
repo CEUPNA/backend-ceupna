@@ -3,17 +3,13 @@
 from rest_framework import viewsets
 from rest_framework.response import Response
 
-from.management.bus_timetable import get_bus_timetables
-from .models import TIC, Center, Degree, Department, Event, Representative, Subject, Teacher
-from .serializers import (BusSerializer, CenterSerializer, DegreeSerializer, DepartmentSerializer,
-                          EventSerializer, RepresentativeSerializer,
-                          SubjectDetailSerializer, SubjectListSerializer,
-                          TeacherDetailSerializer, TeacherListSerializer,
-                          TICDetailSerializer, TICListSerializer)
+from . import models
+from . import serializers
+from .management.bus_timetable import get_bus_timetables
 
 
 class BusViewSet(viewsets.GenericViewSet):
-    serializer_class = BusSerializer
+    serializer_class = serializers.BusSerializer
     queryset = list()
 
     def list(self, request):
@@ -30,16 +26,16 @@ class CenterViewSet(viewsets.ReadOnlyModelViewSet):
     """
     Listado y vista en detalle de los Centros de la Universidad.
     """
-    queryset = Center.objects.all()
-    serializer_class = CenterSerializer
+    queryset = models.Center.objects.all()
+    serializer_class = serializers.CenterSerializer
 
 
 class DegreeViewSet(viewsets.ReadOnlyModelViewSet):
     """
     Listado y vista en detalle de las titulaciones de la Universidad.
     """
-    queryset = Degree.objects.prefetch_related('center').all()
-    serializer_class = DegreeSerializer
+    queryset = models.Degree.objects.prefetch_related('center').all()
+    serializer_class = serializers.DegreeSerializer
 
     def get_queryset(self):
         """
@@ -47,7 +43,7 @@ class DegreeViewSet(viewsets.ReadOnlyModelViewSet):
             - Un subconjunto de las grado dado el id del centro.
         :return: Una subconjunto de las titulaciones con los criterios previstos.
         """
-        queryset = Degree.objects.all()
+        queryset = models.Degree.objects.all()
         center_id = self.request.query_params.get('center_id', None)
         if center_id is not None:
             queryset = queryset.filter(degree__center__center_id__exact=center_id).distinct()
@@ -58,40 +54,40 @@ class DepartmentViewSet(viewsets.ReadOnlyModelViewSet):
     """
     Listado y vista en detalle de los departamentos de la UPNA.
     """
-    serializer_class = DepartmentSerializer
-    queryset = Department.objects.filter(active=True)
+    serializer_class = serializers.DepartmentSerializer
+    queryset = models.Department.objects.filter(active=True)
 
 
 class EventViewSet(viewsets.ReadOnlyModelViewSet):
     """
     Listado y vista en detalle de las actividades de la UPNA.
     """
-    serializer_class = EventSerializer
-    queryset = Event.objects.all()
+    serializer_class = serializers.EventSerializer
+    queryset = models.Event.objects.all()
 
 
 class CEUPNAEventViewSet(viewsets.ReadOnlyModelViewSet):
     """
     Listado y vista en detalle de las actividades de la UPNA.
     """
-    serializer_class = EventSerializer
-    queryset = Event.objects.all().filter(schedule__exact='ceupna')
+    serializer_class = serializers.EventSerializer
+    queryset = models.Event.objects.all().filter(schedule__exact='ceupna')
 
 
 class InstEventViewSet(viewsets.ReadOnlyModelViewSet):
     """
     Listado y vista en detalle de las actividades de la UPNA.
     """
-    serializer_class = EventSerializer
-    queryset = Event.objects.all().filter(schedule__exact='inst')
+    serializer_class = serializers.EventSerializer
+    queryset = models.Event.objects.all().filter(schedule__exact='inst')
 
 
 class RepresentativeViewSet(viewsets.ReadOnlyModelViewSet):
     """
     Listado y vista en detalle de los representantes de la Universidad
     """
-    serializer_class = RepresentativeSerializer
-    queryset = Representative.objects.all()
+    serializer_class = serializers.RepresentativeSerializer
+    queryset = models.Representative.objects.all()
 
 
 class SubjectViewSet(viewsets.ReadOnlyModelViewSet):
@@ -107,7 +103,7 @@ class SubjectViewSet(viewsets.ReadOnlyModelViewSet):
             - Un subconjunto de las asignatruas dado el id del grado que utiliza la UPNA.
         :return: Una subconjunto de las asignaturas con los criterios previstos.
         """
-        queryset = Subject.objects.all()
+        queryset = models.Subject.objects.all()
         upna_id = self.request.query_params.get('upna_id', None)
         degree_id = self.request.query_params.get('degree_id', None)
         upna_degree_id = self.request.query_params.get('upna_degree_id', None)
@@ -126,9 +122,9 @@ class SubjectViewSet(viewsets.ReadOnlyModelViewSet):
         :return: El serializador correcto según el tipo de petición.
         """
         if self.action == 'list':
-            return SubjectListSerializer
+            return serializers.SubjectListSerializer
         else:
-            return SubjectDetailSerializer
+            return serializers.SubjectDetailSerializer
 
 
 class TeacherViewSet(viewsets.ReadOnlyModelViewSet):
@@ -145,7 +141,7 @@ class TeacherViewSet(viewsets.ReadOnlyModelViewSet):
             - Un subconjunto de las asignaturas dado el id del grado que utiliza la UPNA.
         :return: Una subconjunto de los profesores con los criterios previstos.
         """
-        queryset = Teacher.objects.all()
+        queryset = models.Teacher.objects.all()
         name = self.request.query_params.get('name', None)
         upna_id = self.request.query_params.get('upna_id', None)
         degree_id = self.request.query_params.get('degree_id', None)
@@ -169,16 +165,16 @@ class TeacherViewSet(viewsets.ReadOnlyModelViewSet):
         :return: El serializador correcto según el tipo de petición.
         """
         if self.action == 'list' and self.request.query_params.get('subject_id', None) is None:
-            return TeacherListSerializer
+            return serializers.TeacherListSerializer
         else:
-            return TeacherDetailSerializer
+            return serializers.TeacherDetailSerializer
 
 
 class TICViewSet(viewsets.ReadOnlyModelViewSet):
     """
     Listado y vista en detalle de los recursos TIC de la Universidad.
     """
-    queryset = TIC.objects.all()
+    queryset = models.TIC.objects.all()
 
     def get_serializer_class(self):
         """
@@ -186,7 +182,6 @@ class TICViewSet(viewsets.ReadOnlyModelViewSet):
         :return: El serializador correcto según el tipo de petición.
         """
         if self.action == 'list':
-            return TICListSerializer
+            return serializers.TICListSerializer
         else:
-            return TICDetailSerializer
-#    serializer_class = TICSerializer
+            return serializers.TICDetailSerializer

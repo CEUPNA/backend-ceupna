@@ -2,8 +2,7 @@
 
 from rest_framework import serializers
 
-from .models import (TIC, Center, Degree, Department, Event, Representative, Subject,
-                     Teacher)
+from . import models
 
 
 class BusTimetableSerializer(serializers.Serializer):
@@ -43,12 +42,31 @@ class NameSerializer(serializers.Serializer):
 
 class CenterSerializer(serializers.ModelSerializer):
     name = serializers.SerializerMethodField()
+    representative_members = serializers.SerializerMethodField()
+    quality_representative_members = serializers.SerializerMethodField()
 
-    def get_name(self, obj):
+    @staticmethod
+    def get_name(obj):
         return NameSerializer(obj).data
 
+    @staticmethod
+    def get_representative_members(obj):
+        num_rep = obj.number_representative_members
+        q = models.CenterRepresentative.objects.filter(center=obj).order_by('-init_date')[:num_rep].values(
+            'representative')
+        qq = models.Representative.objects.filter(id__in=q)
+        return RepresentativeSerializer(qq, many=True).data
+
+    @staticmethod
+    def get_quality_representative_members(obj):
+        num_rep = obj.number_quality_representative_members
+        q = models.CenterQualityRepresentative.objects.filter(center=obj).order_by('-init_date')[:num_rep].values(
+            'representative')
+        qq = models.Representative.objects.filter(id__in=q)
+        return RepresentativeSerializer(qq, many=True).data
+
     class Meta:
-        model = Center
+        model = models.Center
         exclude = ('name_es', 'name_eus', 'name_en')
 
 
@@ -56,37 +74,47 @@ class DegreeSerializer(serializers.ModelSerializer):
     name = serializers.SerializerMethodField()
     center = CenterSerializer(many=True)
 
-    def get_name(self, obj):
+    @staticmethod
+    def get_name(obj):
         return NameSerializer(obj).data
 
     class Meta:
-        model = Degree
+        model = models.Degree
         depth = 1
         exclude = ('name_es', 'name_eus', 'name_en')
 
 
 class DepartmentSerializer(serializers.ModelSerializer):
+    representative_members = serializers.SerializerMethodField()
+
+    @staticmethod
+    def get_representative_members(obj):
+        num_rep = obj.number_representative_members
+        q = models.DepartmentRepresentative.objects.filter(department=obj).order_by('-init_date')[:num_rep].values('representative')
+        qq = models.Representative.objects.filter(id__in=q)
+        return RepresentativeSerializer(qq, many=True).data
+
     class Meta:
-        model = Department
+        model = models.Department
         depth = 1
         fields = '__all__'
 
 
 class EventSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Event
+        model = models.Event
         fields = '__all__'
 
 
 class RepresentativeSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Representative
+        model = models.Representative
         fields = '__all__'
 
 
 class SubjectListSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Subject
+        model = models.Subject
         fields = ('id', 'name',)
 
 
@@ -95,14 +123,14 @@ class SubjectDetailSerializer(serializers.ModelSerializer):
     bibliography = serializers.ReadOnlyField()
 
     class Meta:
-        model = Subject
+        model = models.Subject
         depth = 1
         fields = '__all__'
 
 
 class TeacherListSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Teacher
+        model = models.Teacher
         fields = ('id', 'name',)
 
 
@@ -112,17 +140,17 @@ class TeacherDetailSerializer(serializers.ModelSerializer):
     #  subjects = serializers.ReadOnlyField()
 
     class Meta:
-        model = Teacher
+        model = models.Teacher
         fields = '__all__'
 
 
 class TICListSerializer(serializers.ModelSerializer):
     class Meta:
-        model = TIC
+        model = models.TIC
         fields = ('id', 'name', 'icon')
 
 
 class TICDetailSerializer(serializers.ModelSerializer):
     class Meta:
-        model = TIC
+        model = models.TIC
         fields = '__all__'

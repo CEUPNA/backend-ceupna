@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import timezone
 
@@ -9,6 +10,22 @@ TYPE_SUBJ = [('ba', 'Básica'), ('ob', 'Obligatoria'), ('op', 'Optativa')]
 EVENT_SCHEDULE = [('inst', 'Institucional'), ('ceupna', 'Consejo de Estudiantes')]
 EVENT_TAG = [('ens', 'Enseñanzas'), ('est', 'Estudiantes'), ('gen', 'General')]
 YEAR = [('1', 'Primero'), ('2', 'Segundo'), ('3', 'Tercero'), ('4', 'Cuarto'), ('5', 'Quinto'), ('6', 'Sexto')]
+
+
+class HistoryRelation(models.Model):
+    """
+    Clase abstracta para manejar los historiales
+    """
+    init_date = models.DateField(default=timezone.now)
+    end_date = models.DateField(blank=True, null=True)
+
+    def clean(self, *args, **kwargs):
+        if self.end_date and self.init_date > self.end_date:
+            raise ValidationError('La fecha de comienzo debe ser anterior a la de final.')
+        super(HistoryRelation, self).clean(*args, **kwargs)
+
+    class Meta:
+        abstract = True
 
 
 class Institution(models.Model):
@@ -22,6 +39,7 @@ class Institution(models.Model):
     email = models.EmailField(max_length=100, blank=True, default='')
     telephone = models.CharField(max_length=20, blank=True, default='')
     web = models.URLField(blank=True, default='')
+    number_representative_members = models.PositiveIntegerField(blank=True, default=0)
     last_updated = models.DateTimeField(auto_now=True)  # Para saber cuando fue la última vez que se cambió.
 
     def __str__(self):
@@ -37,16 +55,19 @@ class Department(Institution):
     """
     active = models.BooleanField(default=True)
     director = models.ForeignKey('Teacher', default=None, on_delete=models.CASCADE)
-    representative_member = models.ManyToManyField(
-        'Representative',
-        limit_choices_to={'active': True},
-        blank=True
-    )
+    representative_members = models.ManyToManyField('Representative', through='DepartmentRepresentative',
+                                                    through_fields=('department', 'representative'),
+                                                    related_name='department_representatives')
 
     class Meta:
         ordering = ('active', 'name_es',)
         verbose_name = 'departamento'
         verbose_name_plural = 'departamentos'
+
+
+class DepartmentRepresentative(HistoryRelation):
+    representative = models.ForeignKey('Representative', on_delete=models.CASCADE)
+    department = models.ForeignKey('Department', on_delete=models.CASCADE)
 
 
 class Center(Institution):
@@ -55,11 +76,28 @@ class Center(Institution):
     """
     center_id = models.PositiveIntegerField(unique=True)
     acronym = models.CharField(max_length=10, blank=True, default='')
+    representative_members = models.ManyToManyField('Representative', through='CenterRepresentative',
+                                                    through_fields=('center', 'representative'),
+                                                    related_name='center_representatives')
+    number_quality_representative_members = models.PositiveIntegerField(blank=True, default=0)
+    quality_representative_members = models.ManyToManyField('Representative', through='CenterQualityRepresentative',
+                                                            through_fields=('center', 'representative'),
+                                                            related_name='quality_representatives')
 
     class Meta:
         ordering = ('created',)
         verbose_name = 'centro'
         verbose_name_plural = 'centros'
+
+
+class CenterRepresentative(HistoryRelation):
+    representative = models.ForeignKey('Representative', on_delete=models.CASCADE)
+    center = models.ForeignKey('Center', on_delete=models.CASCADE)
+
+
+class CenterQualityRepresentative(HistoryRelation):
+    representative = models.ForeignKey('Representative', on_delete=models.CASCADE)
+    center = models.ForeignKey('Center', on_delete=models.CASCADE)
 
 
 class Degree(models.Model):
@@ -136,13 +174,6 @@ class Person(models.Model):
         abstract = True
 
 
-class RepresentativeDegree(models.Model):
-    representative = models.ForeignKey('Representative', on_delete=models.CASCADE)
-    degree = models.ForeignKey('Degree', on_delete=models.CASCADE)
-    init_date = models.DateField(default=timezone.now)
-    end_date = models.DateField(blank=True, null=True)
-
-
 class Representative(Person):
     """
     Clase para la representación de un representante de estudiantes.
@@ -164,6 +195,13 @@ class Representative(Person):
         ordering = ('-active', 'last_name', 'first_name')
         verbose_name = 'representante'
         verbose_name_plural = 'representantes'
+
+
+class RepresentativeDegree(HistoryRelation):
+    representative = models.ForeignKey('Representative', on_delete=models.CASCADE)
+    degree = models.ForeignKey('Degree', on_delete=models.CASCADE)
+#    init_date = models.DateField(default=timezone.now)
+#    end_date = models.DateField(blank=True, null=True)
 
 #
 # class Rules(models.Model):
