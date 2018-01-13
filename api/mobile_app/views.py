@@ -16,11 +16,6 @@ class BusViewSet(viewsets.GenericViewSet):
         serializer = self.get_serializer(get_bus_timetables(), many=True)
         return Response(serializer.data)
 
-    # def list(self, request):
-    #     d = {'line': 9}
-    #     bs = self.get_serializer(d)
-    #     return Response(bs.data)
-
 
 class CenterViewSet(viewsets.ReadOnlyModelViewSet):
     """
@@ -88,6 +83,23 @@ class RepresentativeViewSet(viewsets.ReadOnlyModelViewSet):
     """
     serializer_class = serializers.RepresentativeSerializer
     queryset = models.Representative.objects.all()
+
+
+class RuleViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    Listado y vista en detalle de los representantes de la Universidad
+    """
+    resource_name = 'rule-version'
+    serializer_class = serializers.RuleSerializer
+    queryset = models.Rule.objects.all()
+
+
+class RuleVersionViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    Listado y vista en detalle de los representantes de la Universidad
+    """
+    serializer_class = serializers.RuleVersionSerializer
+    queryset = models.RuleVersion.objects.all()
 
 
 class SubjectViewSet(viewsets.ReadOnlyModelViewSet):

@@ -112,6 +112,19 @@ class RepresentativeSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class RuleVersionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.RuleVersion
+        fields = '__all__'
+
+
+class RuleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Rule
+        depth = 1
+        fields = ('name_es', 'rule_group', 'ruleversion_set', 'last_updated')
+
+
 class SubjectListSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Subject
@@ -131,7 +144,7 @@ class SubjectDetailSerializer(serializers.ModelSerializer):
 class TeacherListSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Teacher
-        fields = ('id', 'name',)
+        fields = ('id', 'first_name',)
 
 
 class TeacherDetailSerializer(serializers.ModelSerializer):

@@ -6,9 +6,10 @@ from django.utils import timezone
 
 LANGUAGES = [('es', 'Español'), ('en', 'Inglés'), ('eus', 'Euskera'), ('fr', 'Francés')]
 TYPE_SUBJ = [('ba', 'Básica'), ('ob', 'Obligatoria'), ('op', 'Optativa')]
-#TYPE_RULES = [('ens', 'Enseñanzas'), ('est', 'Estudiantes'), ('gen', 'General')]
+TYPE_RULES = [('ens', 'Enseñanzas'), ('est', 'Estudiantes'), ('gen', 'General')]
 EVENT_SCHEDULE = [('inst', 'Institucional'), ('ceupna', 'Consejo de Estudiantes')]
 EVENT_TAG = [('ens', 'Enseñanzas'), ('est', 'Estudiantes'), ('gen', 'General')]
+SEX = [('h', 'Hombre'), ('m', 'Mujer')]
 YEAR = [('1', 'Primero'), ('2', 'Segundo'), ('3', 'Tercero'), ('4', 'Cuarto'), ('5', 'Quinto'), ('6', 'Sexto')]
 
 
@@ -39,7 +40,6 @@ class Institution(models.Model):
     email = models.EmailField(max_length=100, blank=True, default='')
     telephone = models.CharField(max_length=20, blank=True, default='')
     web = models.URLField(blank=True, default='')
-    number_representative_members = models.PositiveIntegerField(blank=True, default=0)
     last_updated = models.DateTimeField(auto_now=True)  # Para saber cuando fue la última vez que se cambió.
 
     def __str__(self):
@@ -55,6 +55,7 @@ class Department(Institution):
     """
     active = models.BooleanField(default=True)
     director = models.ForeignKey('Teacher', default=None, on_delete=models.CASCADE)
+    number_representative_members = models.PositiveIntegerField(blank=True, default=0)
     representative_members = models.ManyToManyField('Representative', through='DepartmentRepresentative',
                                                     through_fields=('department', 'representative'),
                                                     related_name='department_representatives')
@@ -76,6 +77,7 @@ class Center(Institution):
     """
     center_id = models.PositiveIntegerField(unique=True)
     acronym = models.CharField(max_length=10, blank=True, default='')
+    number_representative_members = models.PositiveIntegerField(blank=True, default=0)
     representative_members = models.ManyToManyField('Representative', through='CenterRepresentative',
                                                     through_fields=('center', 'representative'),
                                                     related_name='center_representatives')
@@ -164,6 +166,7 @@ class Person(models.Model):
     Clase abstracta para la representación de una persona.
     """
     created = models.DateTimeField(auto_now_add=True)
+    sex = models.CharField(max_length=1, blank=True, default='', choices=SEX)
     first_name = models.CharField(max_length=100, blank=True, default='', verbose_name='Nombre')
     last_name = models.CharField(max_length=100, blank=True, default='', verbose_name='Apellidos')
     email = models.EmailField(max_length=150, blank=True, default='', unique=True)
@@ -184,7 +187,6 @@ class Representative(Person):
     claustral = models.BooleanField(default=False)
     delegate = models.BooleanField(default=True)
     degree = models.ManyToManyField('Degree', through='RepresentativeDegree', through_fields=('representative', 'degree'))
-        #models.ForeignKey('Degree', default=None, blank=True, on_delete=models.CASCADE)  # TODO: ¿Y cuando ha tenido más de uno?
     year = models.CharField(max_length=1, blank=True, default='', choices=YEAR)
     # Las relaciones con cada uno de los sitios donde es representantes vienen en los otros modelos.
 
@@ -200,27 +202,44 @@ class Representative(Person):
 class RepresentativeDegree(HistoryRelation):
     representative = models.ForeignKey('Representative', on_delete=models.CASCADE)
     degree = models.ForeignKey('Degree', on_delete=models.CASCADE)
-#    init_date = models.DateField(default=timezone.now)
-#    end_date = models.DateField(blank=True, null=True)
 
-#
-# class Rules(models.Model):
-#     """
-#     Clase para la representación de una normativa universitaria.
-#     """
-#     created = models.DateTimeField(auto_now_add=True)
-#     name_es = models.CharField(max_length=150, blank=True, default='')
-#     name_eus = models.CharField(max_length=150, blank=True, default='')
-#     name_en = models.CharField(max_length=150, blank=True, default='')
-#     last_version = models.URLField(blank=True)
-#     # previous_versions
-#     rule_group = models.CharField(max_length=3, blank=True, default='', choices=TYPE_RULES)
-#     last_updated = models.DateTimeField(auto_now=True)  # Para saber cuando fue la última vez que se cambió.
-#
-#     class Meta:
-#         ordering = ('created',)
-#         verbose_name = 'normativa'
-#         verbose_name_plural = 'normativas'
+
+class Rule(models.Model):
+    """
+    Clase para la representación de una normativa universitaria.
+    """
+    # En la vista habrá que preparar que se vela URL de la última versión.
+    created = models.DateTimeField(auto_now_add=True)
+    name_es = models.CharField(max_length=150, blank=True, default='')
+    name_eus = models.CharField(max_length=150, blank=True, default='')
+    name_en = models.CharField(max_length=150, blank=True, default='')
+    rule_group = models.CharField(max_length=3, blank=True, default='', choices=TYPE_RULES)
+    last_updated = models.DateTimeField(auto_now=True)  # Para saber cuando fue la última vez que se cambió.
+
+    def __str__(self):
+        return self.name_es
+
+    class Meta:
+        ordering = ('created',)
+        verbose_name = 'normativa'
+        verbose_name_plural = 'normativas'
+
+
+class RuleVersion(models.Model):
+    """
+    Clase para la representación de una versión de una normativa universitaria.
+    """
+    created = models.DateTimeField(auto_now_add=True)
+    description = models.CharField(max_length=200, blank=True, default='')
+    document = models.URLField(blank=True, default='')
+    date = models.DateField(blank=True)
+    rule = models.ForeignKey('Rule', on_delete=models.CASCADE)
+    last_updated = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ('rule', 'created',)
+        verbose_name = 'versión'
+        verbose_name_plural = 'versiones'
 
 
 class Subject(models.Model):

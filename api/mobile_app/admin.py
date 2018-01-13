@@ -12,14 +12,14 @@ admin.site.register(models.Teacher)
 admin.site.register(models.TIC)
 
 
-class CenterRepresentativeInLine(admin.TabularInline):
+class CenterRepresentativeInline(admin.TabularInline):
     model = models.Center.representative_members.through
     verbose_name = "representante en Junta"
     verbose_name_plural = "representantes en Junta"
     extra = 0
 
 
-class CenterQualityRepresentativeInLine(admin.TabularInline):
+class CenterQualityRepresentativeInline(admin.TabularInline):
     model = models.Center.quality_representative_members.through
     verbose_name = "representante en C. de Calidad"
     verbose_name_plural = "representantes en C. de Calidad"
@@ -28,7 +28,7 @@ class CenterQualityRepresentativeInLine(admin.TabularInline):
 
 @admin.register(models.Center)
 class CenterAdmin(admin.ModelAdmin):
-    inlines = (CenterRepresentativeInLine, CenterQualityRepresentativeInLine,)
+    inlines = (CenterRepresentativeInline, CenterQualityRepresentativeInline,)
 
 
 class DeparmentRepresentativeInline(admin.TabularInline):
@@ -53,3 +53,13 @@ class RepresentativeDegreeInline(admin.TabularInline):
 @admin.register(models.Representative)
 class RepresentativeAdmin(admin.ModelAdmin):
     inlines = (RepresentativeDegreeInline,)
+
+
+class RuleVersionInline(admin.TabularInline):
+    model = models.RuleVersion
+    verbose_name = 'versión'
+    verbose_name_plural = 'versiones'
+
+@admin.register(models.Rule)
+class RuleAdmin(admin.ModelAdmin):
+    inlines = (RuleVersionInline,)
