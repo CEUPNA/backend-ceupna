@@ -97,6 +97,7 @@ class Command(BaseCommand):
             degree.english_prog = d['english_prog']
             degree.french_prog = d['french_prog']
 
+            degree.save()
             degree.center.clear()
             for c in d['center']:
                 if c['center_id'] is None:
@@ -193,6 +194,8 @@ class Command(BaseCommand):
                                   "Por favor, solucione este problema antes de introducir la asignatura." % subject.upna_id)
                 subject.degree = degree
 
+                subject.save()
+
                 subject.teachers.clear()
                 if s['teachers'] is None:
                     pass
@@ -244,7 +247,7 @@ class Command(BaseCommand):
 
             # Se introducen los demás datos, sustituyendo siempre los anteriores.
             # TODO: Revisar qué hacer para las actualizaciones... no tiene sentido actualizar con datos que ya están.
-            teacher.name = t['name']
+            teacher.last_name = t['name']
             teacher.email = t['email']
             teacher.telephone = t['telephone']
             teacher.timetable = t['timetable']

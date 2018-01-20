@@ -81,7 +81,7 @@ class RepresentativeViewSet(viewsets.ReadOnlyModelViewSet):
     """
     Listado y vista en detalle de los representantes de la Universidad
     """
-    serializer_class = serializers.RepresentativeSerializer
+    serializer_class = serializers.ShortRepresentativeSerializer
     queryset = models.Representative.objects.all()
 
 
@@ -100,6 +100,15 @@ class RuleVersionViewSet(viewsets.ReadOnlyModelViewSet):
     """
     serializer_class = serializers.RuleVersionSerializer
     queryset = models.RuleVersion.objects.all()
+
+class UniqueRepreViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = serializers.UniqueResponsibilitySerializer
+    queryset = models.Responsibility.objects.all()
+
+
+class StudentCouncilViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = serializers.StudentCouncilSerializer
+    queryset = models.StudentCouncil.objects.all()
 
 
 class SubjectViewSet(viewsets.ReadOnlyModelViewSet):

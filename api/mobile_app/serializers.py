@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+from django.db.models import Max
 from rest_framework import serializers
 
 from . import models
@@ -55,7 +55,7 @@ class CenterSerializer(serializers.ModelSerializer):
         q = models.CenterRepresentative.objects.filter(center=obj).order_by('-init_date')[:num_rep].values(
             'representative')
         qq = models.Representative.objects.filter(id__in=q)
-        return RepresentativeSerializer(qq, many=True).data
+        return ShortRepresentativeSerializer(qq, many=True).data
 
     @staticmethod
     def get_quality_representative_members(obj):
@@ -63,7 +63,7 @@ class CenterSerializer(serializers.ModelSerializer):
         q = models.CenterQualityRepresentative.objects.filter(center=obj).order_by('-init_date')[:num_rep].values(
             'representative')
         qq = models.Representative.objects.filter(id__in=q)
-        return RepresentativeSerializer(qq, many=True).data
+        return ShortRepresentativeSerializer(qq, many=True).data
 
     class Meta:
         model = models.Center
@@ -92,7 +92,7 @@ class DepartmentSerializer(serializers.ModelSerializer):
         num_rep = obj.number_representative_members
         q = models.DepartmentRepresentative.objects.filter(department=obj).order_by('-init_date')[:num_rep].values('representative')
         qq = models.Representative.objects.filter(id__in=q)
-        return RepresentativeSerializer(qq, many=True).data
+        return ShortRepresentativeSerializer(qq, many=True).data
 
     class Meta:
         model = models.Department
@@ -106,10 +106,24 @@ class EventSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class RepresentativeSerializer(serializers.ModelSerializer):
+class UniqueResponsibilitySerializer(serializers.ModelSerializer):
+    representative = serializers.SerializerMethodField()
+
+    @staticmethod
+    def get_representative(obj):
+        q = models.ResponsibilityRepresentativeHistory.objects.filter(responsibility=obj).order_by('-init_date')[:1].values('representative')
+        qq = models.Representative.objects.filter(id__in=q)
+        return ShortRepresentativeSerializer(qq, many=True).data
+
+    class Meta:
+        model = models.Responsibility
+        exclude = 'representative', 'student_council'
+
+
+class ShortRepresentativeSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Representative
-        fields = '__all__'
+        fields = 'first_name', 'last_name', 'degree', 'year'
 
 
 class RuleVersionSerializer(serializers.ModelSerializer):
@@ -123,6 +137,20 @@ class RuleSerializer(serializers.ModelSerializer):
         model = models.Rule
         depth = 1
         fields = ('name_es', 'rule_group', 'ruleversion_set', 'last_updated')
+
+
+class StudentCouncilSerializer(serializers.ModelSerializer):
+    representative_members = serializers.SerializerMethodField()
+
+    @staticmethod
+    def get_representative_members(obj):
+        q = models.Responsibility.objects.filter(student_council=obj)
+        return UniqueResponsibilitySerializer(q, many=True).data
+
+    class Meta:
+        model = models.StudentCouncil
+        depth = 1
+        fields = '__all__'
 
 
 class SubjectListSerializer(serializers.ModelSerializer):
@@ -144,7 +172,7 @@ class SubjectDetailSerializer(serializers.ModelSerializer):
 class TeacherListSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Teacher
-        fields = ('id', 'first_name',)
+        fields = ('id', 'last_name',)
 
 
 class TeacherDetailSerializer(serializers.ModelSerializer):

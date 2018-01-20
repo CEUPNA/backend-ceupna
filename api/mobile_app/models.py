@@ -288,6 +288,40 @@ class Subject(models.Model):
         verbose_name_plural = 'asignaturas'
 
 
+class StudentCouncil(Institution):
+    center = models.ForeignKey('Center', null=True, blank=True, on_delete=models.CASCADE)
+
+    class Meta:
+        ordering = ('center', 'created',)
+        verbose_name = 'Consejo de Estudiantes'
+        verbose_name_plural = 'Consejos de Estudiantes'
+
+
+class Responsibility(models.Model):
+    created = models.DateTimeField(auto_now_add=True)
+    name_es = models.CharField(max_length=100, blank=True, default='')
+    name_eus = models.CharField(max_length=100, blank=True, default='')
+    name_en = models.CharField(max_length=100, blank=True, default='')
+    email = models.EmailField(blank=True)
+    student_council = models.ForeignKey('StudentCouncil', on_delete=models.CASCADE)
+    last_updated = models.DateTimeField(auto_now=True)
+    representative = models.ManyToManyField('Representative', through='ResponsibilityRepresentativeHistory',
+                                                    through_fields=('responsibility', 'representative'),
+                                                    related_name='responsibility_representatives',
+                                                    related_query_name='rres')
+
+    def __str__(self):
+        return self.name_es + ' (' + self.student_council.name_es + ')'
+
+
+class ResponsibilityRepresentativeHistory(HistoryRelation):
+    representative = models.ForeignKey('Representative', on_delete=models.CASCADE)
+    responsibility = models.ForeignKey('Responsibility', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.representative.__str__()
+
+
 class Teacher(Person):
     """
     Clase para la representación de un profesor.

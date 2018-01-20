@@ -45,7 +45,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework_docs',
-    'mobile_app.apps.MobileAppConfig',
+    'nested_admin',
+    'mobile_app.apps.MobileAppConfig'
 ]
 
 MIDDLEWARE = [

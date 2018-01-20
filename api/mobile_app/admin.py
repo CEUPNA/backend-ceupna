@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from django.contrib import admin
+import nested_admin
 
 from . import models
 
@@ -50,16 +51,50 @@ class RepresentativeDegreeInline(admin.TabularInline):
     extra = 0
 
 
+class ResponsibilityRepresentativeHistoryInline(admin.TabularInline):
+    model = models.ResponsibilityRepresentativeHistory
+    verbose_name = 'cargo'
+    verbose_name_plural = 'cargos'
+    extra = 0
+
+
 @admin.register(models.Representative)
 class RepresentativeAdmin(admin.ModelAdmin):
-    inlines = (RepresentativeDegreeInline,)
+    inlines = (RepresentativeDegreeInline, ResponsibilityRepresentativeHistoryInline)
 
 
 class RuleVersionInline(admin.TabularInline):
     model = models.RuleVersion
     verbose_name = 'versión'
     verbose_name_plural = 'versiones'
+    extra = 0
+
 
 @admin.register(models.Rule)
 class RuleAdmin(admin.ModelAdmin):
     inlines = (RuleVersionInline,)
+
+
+class ResponsibilityRepresentativeHistory2Inline(nested_admin.NestedStackedInline):
+    model = models.ResponsibilityRepresentativeHistory
+    list_display = 'init_date'
+    verbose_name = 'último responsable'
+    verbose_name_plural = 'últimos responsables'
+    extra = 0
+
+
+class ResponsibilityInline(nested_admin.NestedStackedInline):
+    model = models.Responsibility
+    inlines = ResponsibilityRepresentativeHistory2Inline,
+    verbose_name = 'cargo'
+    verbose_name_plural = 'cargos'
+    extra = 0
+
+
+#@admin.register(models.StudentCouncil)
+class StudentCouncilAdmin(nested_admin.NestedModelAdmin):
+    inlines = (ResponsibilityInline,)
+
+
+admin.site.register(models.StudentCouncil, StudentCouncilAdmin)
+

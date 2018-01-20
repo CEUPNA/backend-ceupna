@@ -22,6 +22,7 @@ from django.http import HttpResponse
 urlpatterns = [
     url(r'^jet/', include('jet.urls', 'jet')),  # Django JET URLS
     url(r'^jet/dashboard/', include('jet.dashboard.urls', 'jet-dashboard')),  # Django JET dashboard URLS
+    url(r'^_nested_admin/', include('nested_admin.urls')),
     url(r'^admin/', admin.site.urls),
     url(r'^', include('mobile_app.urls')),
     url(r'^robots.txt$', lambda r: HttpResponse("User-agent: *\nDisallow: /", content_type="text/plain")),
