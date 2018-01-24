@@ -19,6 +19,9 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.http import HttpResponse
 
+from rest_framework_swagger.views import get_swagger_view
+
+
 urlpatterns = [
     url(r'^jet/', include('jet.urls', 'jet')),  # Django JET URLS
     url(r'^jet/dashboard/', include('jet.dashboard.urls', 'jet-dashboard')),  # Django JET dashboard URLS
@@ -26,7 +29,7 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^', include('mobile_app.urls')),
     url(r'^robots.txt$', lambda r: HttpResponse("User-agent: *\nDisallow: /", content_type="text/plain")),
-#    url(r'^docs/', include('rest_framework_docs.urls')),
+    url(r'^docs/', get_swagger_view(title='Pastebin API')),
 ]
 
 if settings.DEBUG:

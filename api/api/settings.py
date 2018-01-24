@@ -44,7 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-#    'rest_framework_docs',
+    'rest_framework_swagger',
     'nested_admin',
     'mobile_app.apps.MobileAppConfig'
 ]
@@ -133,11 +133,8 @@ STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-# TODO: Revisar esto
-# For avoid documentation in production:
-# REST_FRAMEWORK_DOCS = {
-#     'HIDE_DOCS': True
-# }
+
+SWAGGER_SETTINGS = {'USE_SESSION_AUTH': False}
 
 # TODO: Revisar cómo hacerlo.
 CORS_ORIGIN_ALLOW_ALL = True
