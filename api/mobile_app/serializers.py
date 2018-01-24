@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from django.db.models import Max
 from rest_framework import serializers
 
 from . import models
@@ -117,7 +116,7 @@ class UniqueResponsibilitySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Responsibility
-        exclude = 'representative', 'student_council'
+        exclude = 'student_council',
 
 
 class ShortRepresentativeSerializer(serializers.ModelSerializer):
