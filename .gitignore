@@ -8,7 +8,8 @@
 # Crawler en scrapy (python)
 crawler/*.html
 crawler/data
-.scrapy.*
+crawler/scrapy.log
+.scrapy*
 
 # Backend Django
 db.sqlite3

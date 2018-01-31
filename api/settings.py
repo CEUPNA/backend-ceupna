@@ -46,7 +46,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_swagger',
     'nested_admin',
-    'mobile_app.apps.MobileAppConfig'
+    'mobile_app'
 ]
 
 MIDDLEWARE = [

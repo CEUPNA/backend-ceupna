@@ -206,3 +206,32 @@ class TICViewSet(viewsets.ReadOnlyModelViewSet):
             return serializers.TICListSerializer
         else:
             return serializers.TICDetailSerializer
+
+
+# Web
+# https://chastityslave2556.tumblr.com/
+# https://chirenon.tumblr.com/post/149470265042/seth-finds-out-that-he-and-brad-wont-be-switching
+# https://chirenon.tumblr.com/archive
+# http://obeyedyoungster.tumblr.com
+# http://briefsboy22.tumblr.com/page/45
+# http://maleinchastitycage.tumblr.com/
+# https://chirenon.tumblr.com/post/168827792862
+# http://obeyedyoungster.tumblr.com/post/168056977234/follow-me-obeyedyoungster
+# http://ruinedorgasms.tumblr.com/post/167609054627
+# http://obeyedyoungster.tumblr.com/post/168056977234/follow-me-obeyedyoungster
+# https://hornytwinkcock.tumblr.com/
+# http://chastity93.tumblr.com/page/22
+# https://embarrassedboys.tumblr.com/post/68555312651
+# https://domtopsir.tumblr.com/post/169076384506
+# https://chastitypupboy.tumblr.com
+# https://tightlypacked.tumblr.com
+# https://hornywaterpologuy.tumblr.com/
+# https://straightslaves.tumblr.com
+# https://ottawasub.tumblr.com/
+# https://mastersebparis.tumblr.com/
+# http://hardmaster999.tumblr.com/
+# https://dumb-horny-superhero.tumblr.com
+# https://username108926.tumblr.com/
+# https://cademicante.tumblr.com/post/165682727284
+# http://ropedboys.tumblr.com/
+# https://trainer48.tumblr.com/
