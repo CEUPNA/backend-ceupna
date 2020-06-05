@@ -38,7 +38,7 @@ requests==2.18.4
 attrs==17.4.0
 uritemplate==3.0.0
 simplejson==3.13.2
-Django==2.0.1
+Django==2.2.13
 chardet==3.0.4
 django-rest-swagger==2.1.2
 pyOpenSSL==17.5.0
