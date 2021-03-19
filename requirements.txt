@@ -21,7 +21,7 @@ django-nested-admin==3.0.21
 beautifulsoup4==4.6.0
 pyasn1==0.4.2
 cssselect==1.0.3
-Jinja2==2.10
+Jinja2==2.11.3
 djangorestframework==3.7.7
 constantly==15.1.0
 python-monkey-business==1.0.0
