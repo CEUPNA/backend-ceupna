@@ -7,7 +7,7 @@ Pillow==5.0.0
 w3lib==1.18.0
 idna==2.6
 pytz==2017.3
-Twisted==17.9.0
+Twisted==22.4.0
 zope.interface==4.4.3
 itypes==1.1.0
 incremental==17.5.0
